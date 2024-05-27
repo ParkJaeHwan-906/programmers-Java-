@@ -1,5 +1,8 @@
 package Level_0;
 
+// 프로그래머스 Lv.0
+// 배열 뒤집기
+// https://school.programmers.co.kr/learn/courses/30/lessons/120821
 public class no_120821 {
     public int[] solution(int[] num_list){
         int[] result = new int[num_list.length];
