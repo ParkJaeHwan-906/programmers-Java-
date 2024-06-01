@@ -37,10 +37,10 @@ public class no_152996 {
         Arrays.sort(weights);
         Map<Double, Integer> map = new HashMap<>();
         for(int i : weights) {
-            double a = (i * 1);
-            double b = (i * 2) / 3;
-            double c = (i * 1) / 2;
-            double d = (i * 3) / 4;
+            double a = (i * 1.0);
+            double b = (i * 2.0) / 3.0;
+            double c = (i * 1.0) / 2.0;
+            double d = (i * 3.0) / 4.0;
             if (map.containsKey(a)) answer += map.get(a);
             if (map.containsKey(b)) answer += map.get(b);
             if (map.containsKey(c)) answer += map.get(c);
