@@ -76,7 +76,7 @@ public class no_12978 {
         dijkstra(1);
 
         for(int i = 1; i<=N; i++){
-//            System.out.println(distance[i]);
+            System.out.println(distance[i]);
             if(distance[i] <= K){
                 answer++;
             }
