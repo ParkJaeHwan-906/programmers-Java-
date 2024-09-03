@@ -26,6 +26,7 @@ public class no_12905 {
                 // 정사각형이라면 ( 주변 탐색 )
                 if(board[i][j] == 1){
                    Square square = new Square(n,m,1);
+                   searchNearBy(board, square);
                 }
             }
         }
@@ -34,11 +35,13 @@ public class no_12905 {
     }
 
     public void searchNearBy(int[][] board, Square square){
-        for(int i = square.x1+1; i <= square.x1+ square.lenght; i++){
-            for(int j = square.x2+1; j <= square.x2 + square.lenght; j++){
-
+        for(int i = square.x1; i <= square.x1+ square.lenght; i++){
+            for(int j = square.x2; j <= square.x2 + square.lenght; j++){
+                if(board[i][j] == 0 || (square.x1 > n && square.x2 > m) ) return;
             }
         }
+        answer = square.lenght;
+        searchNearBy(board, new Square(square.x1+1, square.x2+1, square.lenght+1));
     }
 
     public static void main(String[] args){
@@ -47,4 +50,3 @@ public class no_12905 {
         System.out.println(problem.solution(board));
     }
 }
-1.0 => 2.0, 2.2, 1.1
