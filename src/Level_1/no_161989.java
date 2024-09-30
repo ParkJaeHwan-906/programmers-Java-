@@ -24,31 +24,44 @@ public class no_161989 {
 
     페인트를 다시 칠해야하는 구역 section
      */
-    public int solution(int n, int m, int[] section){
-        // section 은 오름차순 정렬
-        int sections = section[section.length-1] - section[0] + 1;
-        // 최대치
-        int answer = 0;
-        // 자바 8
-//        List<Integer> list = Arrays.stream(section).boxed().collect(Collectors.toList());
-//        List<Integer> list = new ArrayList<>();
-//        Arrays.stream(section).forEach((e) -> {
-//            list.add(e);
-//        });
+//    public int solution(int n, int m, int[] section){
+//        // section 은 오름차순 정렬
+//        int sections = section[section.length-1] - section[0] + 1;
+//        // 최대치
+//        int answer = 0;
+//        // 자바 8
+////        List<Integer> list = Arrays.stream(section).boxed().collect(Collectors.toList());
+////        List<Integer> list = new ArrayList<>();
+////        Arrays.stream(section).forEach((e) -> {
+////            list.add(e);
+////        });
+//
+//        // 자바 17
+//        List<Integer> list = Arrays.stream(section).boxed().toList();
+//        try{
+//            // 자바 17
+//            for(int i = list.getFirst(); i <= list.getLast(); i++){
+////            for(int i = list.get(0); i <= list.get(list.size()-1); i++){
+//                if(list.contains(i)) {
+//                    i += (m-1);
+//                    answer++;
+//                }
+//            }
+//        } catch (Exception e){
+//            answer++;
+//        }
+//        return answer;
+////    }
 
-        // 자바 17
-        List<Integer> list = Arrays.stream(section).boxed().toList();
-        try{
-            // 자바 17
-            for(int i = list.getFirst(); i <= list.getLast(); i++){
-//            for(int i = list.get(0); i <= list.get(list.size()-1); i++){
-                if(list.contains(i)) {
-                    i += (m-1);
-                    answer++;
-                }
+    // 최적화된 코드
+    public int solution(int n, int m, int[] section){
+        int now = section[0];
+        int answer = 1;
+        for(int i = 1; i < section.length; i++){
+            if(now + (m-1) < section[i]){
+                answer++;
+                now = section[i];
             }
-        } catch (Exception e){
-            answer++;
         }
         return answer;
     }
