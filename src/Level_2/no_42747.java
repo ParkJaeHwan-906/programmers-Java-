@@ -27,6 +27,7 @@ public class no_42747 {
 
         while(!pq.isEmpty()){
             int h = pq.poll();
+            System.out.println("h : "+h);
             int count = 0;
             for(int i : citations){
                 // h 번 이상 인용되었다면
@@ -34,6 +35,7 @@ public class no_42747 {
                     count++;
                 }
             }
+            System.out.println("count : "+ count);
 
             // n 편 중에 h 번 이상 인용된 논문이 h편 이상
             //    나머지 논문들이 h 번 이하로 인용
