@@ -8,6 +8,8 @@ import java.io.InputStreamReader;
 // 함께하는 효도
 // https://softeer.ai/practice/7727
 public class no_7727 {
+    static int[][] friends;
+    static int answer = 0;
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String[] nm = br.readLine().split(" ");
@@ -15,52 +17,53 @@ public class no_7727 {
         int m = Integer.parseInt(nm[1]);
 
         // map 저장
-        String[][] maps = new String[n][n];
+        int[][] map = new int[n][n];
         boolean[][] visited = new boolean[n][n];
         for(int i = 0; i < n; i++){
             String[] arr = br.readLine().split(" ");
-            maps[i] = arr;
+            for(int j=0; j<n; j++){
+                map[i][j] = Integer.parseInt(arr[j]);
+            }
         }
 
         // 친구 좌표 저장
-        int[][] friends = new int[m][2];
+        friends = new int[m][2];
         for(int i = 0; i < m; i++){
             String[] s = br.readLine().split(" ");
             friends[i][0] = Integer.parseInt(s[0]) -1;
             friends[i][1] = Integer.parseInt(s[1]) -1;
         }
+        visited[friends[0][0]][friends[0][1]] = true;
+        answer = map[friends[0][0]][friends[0][1]]; // 먼저 움직이는 사람의 시작 위치
 
-        no_7727 problem = new no_7727();
-        System.out.println(problem.solution(maps, friends));
+        dfs(map, visited, new int[] {friends[0][0], friends[0][1]}, answer, 0);
+
+        System.out.println(answer);
     }
-    int answer = 0;
-    public int solution(String[][] maps, int[][] friends){
-        boolean[][] visited = new boolean[maps.length][maps.length];
-
-        // 시작 위치에서의 수확
-        for(int[] arr : friends){
-            answer += Integer.parseInt(maps[arr[0]][arr[1]]);
-        }
-        dfs(maps, visited, friends[0][0], friends[0][1], 0, 0);
-
-
-        return answer;
-    }
-    int[] dx = {0,1,0,-1};
-    int[] dy = {1,0,-1,0};
-    public void dfs(String[][] maps, boolean[][] visited, int x, int y, int answer, int depth){
-        answer += Integer.parseInt(maps[x][y]);
+    static int idx = 0; // 현재 움직이고 있는 사람의 idx
+    static int[] dx = new int[] {0,1,0,-1};
+    static int[] dy = new int[] {1,0,-1,0};
+    public static void dfs(int[][] map, boolean[][] visited, int[] start, int sum, int depth){
         if(depth == 3){ // 3초 이동 완료
-            return;
+            if(idx + 1 < friends.length){   // 더 움직일 사람이 있음
+                idx++;
+                visited[friends[idx][0]][friends[idx][1]] = true;
+                // 다음 사람 움직임
+                dfs(map, visited, new int[] {friends[idx][0], friends[idx][1]}, sum + map[friends[idx][0]][friends[idx][1]], 0);
+            } else{ // 더 움직일 사람이 없음
+                // 최대값 비교
+                answer = Math.max(answer, sum);
+            }
         }
 
-        for(int i = 0; i < 4; i++){
-            int nx = x+dx[i];
-            int ny = y+dy[i];
+        for(int i=0; i<4; i++){
+            int nx = start[0] + dx[i];
+            int ny = start[1] + dy[i];
 
-            if(nx >= 0 && ny >= 0 && nx < maps.length && ny < maps.length && visited[nx][ny]){
+            // map 의 범위를 벗어나지 않고, 방문하지 않은경우
+            if(nx >= 0 && ny >= 0 && nx < map.length && ny < map.length && !visited[nx][ny]){
                 visited[nx][ny] = true;
-                dfs(maps, visited, nx, ny,answer + Integer.parseInt(maps[nx][ny]), depth+1);
+                dfs(map, visited, new int[] {nx, ny}, sum + map[nx][ny], depth+1);
                 visited[nx][ny] = false;
             }
         }
