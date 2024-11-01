@@ -12,61 +12,77 @@ import java.util.Scanner;
 // 함께하는 효도
 // https://softeer.ai/practice/7727
 public class no_7727 {
-    static int[][] friends;
-    static int answer = 0;
-    static boolean[][] visited;
+
+    // 전역으로 사용할 visited 와 map 생성 + 작업자 위치
     static int[][] map;
+    static boolean[][] visited;
+    static int[][] worker;
+
+    // 전역변수 answer
+    static int answer = 0;
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        String[] nm = br.readLine().split(" ");
+        // n 과 m 입력
+        String[] nm  = br.readLine().split(" ");
         int n = Integer.parseInt(nm[0]);
         int m = Integer.parseInt(nm[1]);
 
-        // map 저장
         map = new int[n][n];
         visited = new boolean[n][n];
-        for(int i = 0; i < n; i++){
-            String[] arr = br.readLine().split(" ");
+        // map 입력
+        for(int i=0; i<n; i++){
+            String[] mapArr = br.readLine().split(" ");
             for(int j=0; j<n; j++){
-                map[i][j] = Integer.parseInt(arr[j]);
+                map[i][j] = Integer.parseInt(mapArr[j]);
             }
         }
 
-        // 친구 좌표 저장
-        friends = new int[m][2];
-        for(int i = 0; i < m; i++){
-            String[] s = br.readLine().split(" ");
-            friends[i][0] = Integer.parseInt(s[0]) -1;
-            friends[i][1] = Integer.parseInt(s[1]) -1;
+        // 작업자 위치 입력
+        worker = new int[m][2];
+        for(int i=0; i<m; i++){
+            String[] workerArr = br.readLine().split(" ");
+            // i 작업자의 x 좌표
+            worker[i][0] = Integer.parseInt(workerArr[0]) -1;
+            // i 작업자의 y좌표
+            worker[i][1] = Integer.parseInt(workerArr[1]) -1;
         }
 
-        dfs(new int[] {friends[0][0], friends[0][1]}, map[friends[0][0]][friends[0][1]], 0, 0);
+        // 가장 첫 작업자부터 시작
+        int startX = worker[0][0];
+        int startY = worker[0][1];
+        // 방문처리
+        visited[startX][startY] = true;
+        dfs(new int[] {startX, startY}, map[startX][startY],0, 0);
 
         System.out.println(answer);
     }
-    static int idx = 0; // 현재 움직이고 있는 사람의 idx
+
+    // 상하좌우
     static int[] dx = new int[] {0,1,0,-1};
     static int[] dy = new int[] {1,0,-1,0};
-    public static void dfs(int[] start, int sum, int depth, int idx){
-        visited[start[0]][start[1]] = true;
-        if(depth == 3){ // 3초 이동 완료
-            if(idx + 1 < friends.length){   // 더 움직일 사람이 있음
-                // 다음 사람 움직임
-                dfs(new int[] {friends[idx+1][0], friends[idx +1][1]}, sum + map[friends[idx][0]][friends[idx][1]], 0, idx + 1);
-            } else{ // 더 움직일 사람이 없음
-                // 최대값 비교
-                answer = Math.max(answer, sum);
+    public static void dfs(int[] start, int sum, int workerIdx, int depth){
+        if(depth == 3){ // 3초동안 움직임
+            if(workerIdx + 1 < worker.length){  // 더 움직일 수 있는 작업자가 있음
+                int startX = worker[workerIdx+1][0];
+                int startY = worker[workerIdx+1][1];
+                visited[startX][startY] = true;
+                dfs(new int[] {startX, startY}, sum + map[startX][startY], workerIdx +1, 0);
+            }else{  // 더 이상 움직일 작업자가 없음
+                answer = Math.max(sum, answer);
             }
+            // 종료
+            return;
         }
 
-        for(int i=0; i<4; i++){
+        for(int i = 0; i < 4; i++){
+            // 상하좌우로 이동
             int nx = start[0] + dx[i];
             int ny = start[1] + dy[i];
 
-            // map 의 범위를 벗어나지 않고, 방문하지 않은경우
-            if(nx >= 0 && ny >= 0 && nx < map.length && ny < map.length && !visited[nx][ny]){
+            // map 의 안에 있고 방문하지 않음
+            if(nx >= 0 && nx < map.length && ny >= 0 && ny < map.length && !visited[nx][ny]){
                 visited[nx][ny] = true;
-                dfs(new int[] {nx, ny}, sum + map[nx][ny], depth+1, idx);
+                dfs(new int[] {nx, ny}, sum + map[nx][ny], workerIdx, depth +1);
                 visited[nx][ny] = false;
             }
         }
