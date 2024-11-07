@@ -13,10 +13,10 @@ public class SofteerAutoEver241102_1 {
 
         SofteerAutoEver241102_1 problem = new SofteerAutoEver241102_1();
 
-        long beforeTime = System.currentTimeMillis();
-        System.out.println("Queue 를 이용한 풀이 : " + problem.solutionQueue(n,k));
-        long afterTime = System.currentTimeMillis();
-        System.out.println("걸린 시간 : " + (double)(afterTime - beforeTime)/1000);
+//        long beforeTime = System.currentTimeMillis();
+//        System.out.println("Queue 를 이용한 풀이 : " + problem.solutionQueue(n,k));
+//        long afterTime = System.currentTimeMillis();
+//        System.out.println("걸린 시간 : " + (double)(afterTime - beforeTime)/1000);
 
         long beforeTime2 = System.currentTimeMillis();
         System.out.println("Stack 를 이용한 풀이 : " + problem.solutionStack(n,k));
@@ -38,7 +38,7 @@ public class SofteerAutoEver241102_1 {
             int speed  = cur[1];
             int time = cur[2];
 
-            if(loc == n && speed == k) return time;
+            if(loc == n && speed <= k) return time;
 
             // 모든 경우를 탐색함 (감속 -> 가속)
             for(int i = -k; i<= k; i++){
@@ -57,6 +57,7 @@ public class SofteerAutoEver241102_1 {
 
     // 2. Stack 을 이용한 풀이
     public int solutionStack(int n, int k){
+//        Set<String> duplicatedRoute = new HashSet<>();
         Stack<int[]> stack = new Stack<>();
 
         // 시작 설정
@@ -67,8 +68,8 @@ public class SofteerAutoEver241102_1 {
             int loc = cur[0];
             int speed = cur[1];
             int time = cur[2];
-
-            if(loc == n && speed == k) return time;
+//            duplicatedRoute.add(loc+" "+speed+" "+time);
+            if(loc == n && speed <= k) return time;
 
             for(int i = -k; i <= k; i++){
                 int newSpeed = speed + i;
@@ -78,6 +79,7 @@ public class SofteerAutoEver241102_1 {
                 int newLoc = loc + newSpeed;
                 // 거리를 벗어나거나, 제자리인 경우
                 if(newLoc > n || newLoc == loc) continue;
+//                if(duplicatedRoute.contains(newLoc+" "+newSpeed+" "+time+1)) continue;
                 stack.push(new int[] {newLoc, newSpeed, time+1});
             }
         }
