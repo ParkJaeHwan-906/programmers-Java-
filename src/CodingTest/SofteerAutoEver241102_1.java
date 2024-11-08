@@ -22,6 +22,12 @@ public class SofteerAutoEver241102_1 {
         System.out.println("Stack 를 이용한 풀이 : " + problem.solutionStack(n,k));
         long afterTime2 = System.currentTimeMillis();
         System.out.println("걸린 시간 : " + (double)(afterTime2 - beforeTime2)/1000);
+
+
+//        long beforeTime3 = System.currentTimeMillis();
+//        System.out.println("PriorityQueue 를 이용한 풀이 : " + problem.solutionPriorityQueue());
+//        long afterTime3 = System.currentTimeMillis();
+//        System.out.println("걸린 시간 : " + (double)(afterTime3 - beforeTime3)/1000);
     }
 
     // 1. Queue 를 이용한 풀이
@@ -57,11 +63,12 @@ public class SofteerAutoEver241102_1 {
 
     // 2. Stack 을 이용한 풀이
     public int solutionStack(int n, int k){
-//        Set<String> duplicatedRoute = new HashSet<>();
+        Set<String> duplicatedRoute = new HashSet<>();
         Stack<int[]> stack = new Stack<>();
 
         // 시작 설정
         stack.push(new int[] {1,0,0});
+        duplicatedRoute.add(1+","+0);
 
         while(!stack.isEmpty()){
             int[] cur = stack.pop();
@@ -79,11 +86,46 @@ public class SofteerAutoEver241102_1 {
                 int newLoc = loc + newSpeed;
                 // 거리를 벗어나거나, 제자리인 경우
                 if(newLoc > n || newLoc == loc) continue;
-//                if(duplicatedRoute.contains(newLoc+" "+newSpeed+" "+time+1)) continue;
+                if(duplicatedRoute.contains(newLoc+","+newSpeed)) continue;
                 stack.push(new int[] {newLoc, newSpeed, time+1});
+                duplicatedRoute.add(newLoc+","+newSpeed);
             }
         }
         return 0;
+    }
+
+    public int solutionPriorityQueue() {
+       Set<String> route = new HashSet<>();
+       // [위치, 속도, 시간]
+        // 시간 기준 오름차순으로 정렬
+       PriorityQueue<int[]> pq = new PriorityQueue<>((e1 ,e2) -> {return e1[2] - e2[2];});
+
+       pq.offer(new int[] {1,0,0});
+       route.add(1+","+0);
+       while(!pq.isEmpty()){
+           int[] cur = pq.poll();
+           int loc = cur[0];
+           int speed = cur[1];
+           int time = cur[2];
+
+           if(loc == n && speed <= k) return time;
+
+           for(int i=-k; i<=k; i++){
+               int newSpeed = speed + i;
+               // 속도가 음수인 경우
+               if(newSpeed < 0) continue;
+
+               int newLoc = loc + newSpeed;
+               // 거리를 벗어나거나, 제자리인 경우
+               if(newLoc > n || newLoc == loc) continue;
+               // 이미 같은 조건이 있었던 경우
+               if(route.contains(newLoc+","+newSpeed)) continue;
+
+               route.add(newLoc+","+newSpeed);
+               pq.offer(new int[] {newLoc, newSpeed, time+1});
+           }
+       }
+       return -1;
     }
 }
 /*
