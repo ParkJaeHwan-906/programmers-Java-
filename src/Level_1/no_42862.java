@@ -29,49 +29,38 @@ public class no_42862 {
     int[] student;
     public int solution(int n, int[] lost, int[] reserve){
         student = new int[n];
-        Arrays.fill(student,1);
         makeStudent(lost, reserve);
 
         for(int i=0; i<n; i++){
-            if(student[i] != 0) continue;
-
-            if(i==0){
-                if(student[i+1] == 2){
-                    student[i]++;
-                    student[i+1]--;
-                }
-            }else if(i == n-1){
-                if(student[i-1] == 2){
-                    student[i]++;
-                    student[i-1]--;
-                }
-            }else{
-                if(student[i-1] == 2){
-                    student[i]++;
-                    student[i-1]--;
-                } else if(student[i+1] == 2){
-                    student[i]++;
-                    student[i+1]--;
+            if(student[i] == 1){    // 여벌이 있는 경우
+                if(i-1 >= 0 && student[i-1] == -1){ // 범위 내이고, 이전 학생이 잃어버린 경우
+                    student[i]--;
+                    student[i-1]++;
+                }else if(i+1 < n && student[i+1] == -1){
+                    student[i]--;
+                    student[i+1]++;
                 }
             }
         }
+
         return countStudent();
     }
 
+    // 학생 배열을 생성한다.
+    // 여벌의 체육복을 가져온 학생도 도난당할 수 있음
     public void makeStudent(int[] lost, int[] reserve) {
-        for(int i=0; i< lost.length; i++){
-            student[lost[i]-1] = 0;
+        for(int i : lost){
+            student[i-1]--;
         }
-        for(int i=0; i< reserve.length; i++){
-            student[reserve[i]-1] = 2
-            ;
+        for(int i : reserve){
+            student[i-1]++;
         }
     }
 
     public int countStudent(){
         int count = 0;
         for(int i : student){
-            if(i !=0) count++;
+            if(i >= 0) count++;
         }
         return count;
     }
