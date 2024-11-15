@@ -3,6 +3,7 @@ package Level_3;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.PriorityQueue;
 
 // 프로그래머스 Lv.3
@@ -16,11 +17,22 @@ public class no_42861 {
         int[][] costs = new int[][] {{0,1,1},{0,2,2},{1,2,5},{1,3,1},{2,3,8}};
 
         no_42861 problem = new no_42861();
+        System.out.println("Prim 알고리즘");
+        long primBefore = System.currentTimeMillis();
         System.out.println(problem.solution(n, costs));
+        long primAfter = System.currentTimeMillis();
+        System.out.println((double) (primAfter - primBefore)/1000 + " ms");
+
+        System.out.println("Kruskal 알고리즘");
+        long kroskalBefore = System.currentTimeMillis();
+        System.out.println(problem.solution(n, costs));
+        long kruskalAfter = System.currentTimeMillis();
+        System.out.println((double) (kruskalAfter - kroskalBefore)/1000 + " ms");
+
     }
 
 
-    // 📌 Prim 알고리즘 
+    // 📌 Prim 알고리즘
     int[][] conn;
     boolean[] visited;
     public int solution(int n, int[][] costs){
@@ -68,5 +80,51 @@ public class no_42861 {
             }
         }
         return price;
+    }
+
+    // 📌 크루스칼 알고리즘
+    int[] parent;
+    public int solution2(int n, int[][] costs){
+        // 연결 상태를 저장할 배열
+        parent = new int[n];
+        for(int i=0; i<n; i++){
+            parent[i] = i;
+        }
+
+        // cost 값을 기준으로 오름차순 정렬
+        Arrays.sort(costs, (a,b) -> a[2] - b[2]);
+
+        int result = 0;
+        for(int[] cost : costs){
+            // 출발
+            int a = cost[0];
+            // 도착
+            int b = cost[1];
+            // 비용
+            int c = cost[2];
+
+            if(find(a) != find(b)){
+                union(a,b);
+                result += c;
+            }
+        }
+        return result;
+    }
+
+    // 연결 정보를 찾음
+    public int find(int i){
+        if(parent[i] == i) return i;
+        // ⚠ 경로 압축 -  i 의 부모가 자기 자신이 아니라면 i 는 루트노드가 아니다. 로트노드를 저장해둠
+        else return parent[i] = find(parent[i]);
+    }
+
+    public void union(int a, int b){
+        a = find(a);
+        b = find(b);
+
+        // 루트 노드 저장
+        if(a != b){
+            parent[b] = a;
+        }
     }
 }
