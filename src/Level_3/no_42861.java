@@ -71,6 +71,8 @@ public class no_42861 {
 
             price += cost;
             count++;
+            if(count == visited.length) break;
+
             for(int i=0; i< visited.length; i++){
                 // 현재의 도착지에서 새로운 목적지까지 연결되어있는 경우
                 // 아직 방문하지 않은 곳의 경우
