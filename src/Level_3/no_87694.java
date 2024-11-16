@@ -1,6 +1,8 @@
 package Level_3;
 
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.Queue;
 
 // 프로그래머스 Lv.3
 // 아이템 줍기
@@ -17,55 +19,74 @@ public class no_87694 {
 
         no_87694 problem = new no_87694();
         int answer = problem.solution(rectangle, characterX, characterY, itemX, itemY);
+        System.out.println(answer);
 
     }
 
-    int[][] map = new int[10][10];  // 최대 길이
+    // ⚠️ 테두리 표현을 위해 2배로 늘려줌
+    int[][] map = new int[101][101];  // 최대 길이 * 2
     public int solution(int[][] rectangle, int characterX, int characterY, int itemX, int itemY) {
         // 사각형 그리기
         makeMap(rectangle);
+        int result = move(characterX*2, characterY*2, itemX*2, itemY*2);
 
-        // 테두리 구분하기
-        //checkBoarder();
-
-        for(int[] bArr : map){
-            for(int b : bArr){
-                System.out.print(b+" ");
-            }
-            System.out.println();
-        }
-
-
-
-        int answer = 0;
-
-        return answer;
+        // ⚠️ 좌표를 모두 2배 처리 해줬기에, 답도 2배임 따라서 /2 해줌
+        return result/2;
     }
 
     private void makeMap(int[][] rectangle) {
         for(int[] points : rectangle){
             // 우측 상단 -> 좌측 하단
-            int leftDownX = points[0];
-            int leftDownY = 9 - points[1];
-            int rightUpX = points[2];
-            int rightUpY = 9 - points[3];
+            int x1 = points[0] * 2;
+            int y1 = points[1] * 2;
+            int x2 = points[2] * 2;
+            int y2 = points[3] * 2;
 
-            for(int y = rightUpY; y <= leftDownY; y++){
-                for(int x = leftDownX; x <= rightUpX; x++){
-                    map[y][x]++;
+            for(int i=y1; i<=y2; i++){
+                for(int j=x1; j<=x2; j++){
+                    if(map[i][j] == 1) continue;    // 이미 다른 사각형의 내부로 채워진 곳이라면
+                    if(i == y1 || i == y2 || j == x1 || j == x2){   // 테두리라면
+                        map[i][j] = 2;
+                    }else{  // 내부라면
+                        map[i][j] = 1;
+                    }
                 }
             }
         }
     }
 
-    private void checkBoarder() {    // 4방향 모두 1 이상으로 감싸져 있다면 테두리가 아님?
-        for(int i=1; i<9; i++){
-            for(int j=1; j<9; j++){
-                if(map[i-1][j] >= 1 && map[i][j-1] >= 1 && -
-                        map[i+1][j] >= 1 && map[i][j+1] >= 1) map[i][j] = 0;
+    private int[] dx = new int[] {0,1,0,-1};
+    private int[] dy = new int[] {1,0,-1,0};
+    private int move(int startX, int startY, int goalX, int goalY){
+        Queue<int[]> q = new LinkedList<>();
+        boolean[][] visited = new boolean[101][101];
+        // [x,y,이동거리]
+        q.add(new int[] {startY, startX, 0});
+
+        while(!q.isEmpty()){
+            int[] cur = q.poll();
+            int y = cur[0];
+            int x = cur[1];
+            int dist = cur[2];
+
+            if(x == goalX && y == goalY) return dist;
+
+            for(int i=0; i<4; i++){
+                int nx = x + dx[i];
+                int ny = y + dy[i];
+
+                // 범위를 벗어남
+                if(nx < 0 || nx >= 101 || ny < 0 || ny >= 101 || visited[ny][nx]) continue;
+                // 테두리가 아닌 경우
+                if(map[ny][nx] != 2) continue;
+
+                visited[ny][nx] = true;
+                q.add(new int[] {ny, nx, dist+1});
             }
         }
+        return -1;
     }
+
 }
 
 
