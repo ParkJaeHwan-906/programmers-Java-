@@ -18,16 +18,21 @@ public class SofteerAutoEver241102_1 {
 //        long afterTime = System.currentTimeMillis();
 //        System.out.println("걸린 시간 : " + (double)(afterTime - beforeTime)/1000);
 
-        long beforeTime2 = System.currentTimeMillis();
-        System.out.println("Stack 를 이용한 풀이 : " + problem.solutionStack(n,k));
-        long afterTime2 = System.currentTimeMillis();
-        System.out.println("걸린 시간 : " + (double)(afterTime2 - beforeTime2)/1000);
+//        long beforeTime2 = System.currentTimeMillis();
+//        System.out.println("Stack 를 이용한 풀이 : " + problem.solutionStack(n,k));
+//        long afterTime2 = System.currentTimeMillis();
+//        System.out.println("걸린 시간 : " + (double)(afterTime2 - beforeTime2)/1000);
 
 
 //        long beforeTime3 = System.currentTimeMillis();
 //        System.out.println("PriorityQueue 를 이용한 풀이 : " + problem.solutionPriorityQueue());
 //        long afterTime3 = System.currentTimeMillis();
 //        System.out.println("걸린 시간 : " + (double)(afterTime3 - beforeTime3)/1000);
+
+//        long beforeTime4 = System.currentTimeMillis();
+//        System.out.println("BinarySearch 를 이용한 풀이 : " + problem.solutionBinarySearch(n,k));
+//        long afterTime4 = System.currentTimeMillis();
+//        System.out.println("걸린 시간 : " + (double)(afterTime4 - beforeTime4)/1000);
     }
 
     // 1. Queue 를 이용한 풀이
@@ -127,6 +132,58 @@ public class SofteerAutoEver241102_1 {
        }
        return -1;
     }
+
+//    // 이분탐색 풀이
+//    public int solutionBinarySearch(int n, int k){
+//        int left = 1;
+//        int right = n;
+//
+//        while(left <= right){
+//            int mid = (left + right) / 2;
+//
+//            if (isPossible(mid)) {  // mid 시간 안에 도달 가능하다면
+//                right = mid - 1;  // 더 짧은 시간 탐색
+//            } else {
+//                left = mid + 1;  // 더 긴 시간 탐색
+//            }
+//        }
+//        return left;
+//    }
+//
+//    public static boolean isPossible(int T) {
+//        // BFS로 탐색하며 T 시간 안에 도달 가능 여부 확인
+//        Queue<int[]> q = new LinkedList<>();
+//        Set<String> visited = new HashSet<>();
+//        q.offer(new int[]{1, 0});  // 초기 위치와 속도
+//        visited.add(1 + "," + 0);  // 방문 기록
+//
+//        while (!q.isEmpty()) {
+//            int[] cur = q.poll();
+//            int loc = cur[0];
+//            int speed = cur[1];
+//
+//            if (loc == n && speed == 0) return true;  // 목적지 도달
+//
+//            for (int i = -k; i <= k; i++) {
+//                int newSpeed = speed + i;
+//                if (newSpeed < 0) continue;
+//
+//                int newLoc = loc + newSpeed;
+//                if (newLoc < 1 || newLoc > n) continue;  // 유효한 범위 벗어남
+//
+//                String state = newLoc + "," + newSpeed;
+//                if (visited.contains(state)) continue;  // 이미 방문한 상태
+//
+//                // T 초를 넘기지 않는다면 추가 탐색
+//                if (Math.abs(newLoc - n) <= newSpeed * (T - 1)) {
+//                    q.offer(new int[]{newLoc, newSpeed});
+//                    visited.add(state);
+//                }
+//            }
+//        }
+//
+//        return false;  // T 초 안에 도달 불가
+//    }
 }
 /*
 자동차 주행 테스트를 하려한다.
