@@ -1,7 +1,5 @@
 package Level_3;
 
-import org.w3c.dom.html.HTMLImageElement;
-
 import java.util.*;
 import java.io.*;
 
@@ -21,9 +19,13 @@ public class no_6256 {
         }
     }
 
+    // 도로 A
     static Deque<Car> roadA = new ArrayDeque<>();
+    // 도로 B
     static Deque<Car> roadB = new ArrayDeque<>();
+    // 도로 C
     static Deque<Car> roadC = new ArrayDeque<>();
+    // 도로 D
     static Deque<Car> roadD = new ArrayDeque<>();
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -76,70 +78,67 @@ public class no_6256 {
         return Math.min(timeA, Math.min(timeB, Math.min(timeC, timeD)));
     }
 
+
     private int[] solution(int n) {
         int[] answer = new int[n];
-        // -1 로 초기화
-        Arrays.fill(answer, -1);
+        Arrays.fill(answer, -1); // 초기값 -1로 설정
 
-        // 현재 시간
-        int curTime = 0;
+        int curTime = 0; // 현재 시간
 
-        while(!roadA.isEmpty() || !roadB.isEmpty() || !roadC.isEmpty() || !roadD.isEmpty()) {
+        // 교차로에 모든 차량이 통과할 때까지 반복
+        while (!roadA.isEmpty() || !roadB.isEmpty() || !roadC.isEmpty() || !roadD.isEmpty()) {
             // 각 도로의 첫 번째 차량의 진입시간
-            int timeA = roadA.isEmpty() ? Integer.MAX_VALUE : roadA.peek().time;
-            int timeB = roadB.isEmpty() ? Integer.MAX_VALUE : roadB.peek().time;
-            int timeC = roadC.isEmpty() ? Integer.MAX_VALUE : roadC.peek().time;
-            int timeD = roadD.isEmpty() ? Integer.MAX_VALUE : roadD.peek().time;
+            int timeA = !roadA.isEmpty() ? roadA.peek().time : Integer.MAX_VALUE;
+            int timeB = !roadB.isEmpty() ? roadB.peek().time : Integer.MAX_VALUE;
+            int timeC = !roadC.isEmpty() ? roadC.peek().time : Integer.MAX_VALUE;
+            int timeD = !roadD.isEmpty() ? roadD.peek().time : Integer.MAX_VALUE;
 
-            Deque<Car> deque = new ArrayDeque<>();
-            // 현재 시간에 진입한 차들을 deque에 삽입
-            if(curTime == timeA) {
-                deque.offerLast(roadA.poll());
-            }
-            if(curTime == timeB) {
-                deque.offerLast(roadB.poll());
-            }
-            if(curTime == timeC) {
-                deque.offerLast(roadC.poll());
-            }
-            if(curTime == timeD) {
-                deque.offerLast(roadD.poll());
-            }
+            // 현재 시간에 진입 가능한 차량을 저장할 리스트
+            Deque<Car> nowCar = new ArrayDeque<>();
 
-            // 현 시간에 아무도 없다면
-            if(deque.isEmpty()) {
+            // 현재 시간에 진입 가능한 차량을 확인
+            if (curTime == timeA) nowCar.offerLast(roadA.poll());
+            if (curTime == timeB) nowCar.offerLast(roadB.poll());
+            if (curTime == timeC) nowCar.offerLast(roadC.poll());
+            if (curTime == timeD) nowCar.offerLast(roadD.poll());
+
+            // 현재 시간에 진입 가능한 차량이 없으면 다음 시간으로
+            if (nowCar.isEmpty()) {
                 curTime = findMinTime(timeA, timeB, timeC, timeD);
                 continue;
-            } else if(deque.size() == 4) {  // 교착상태라면
-                continue;
             }
 
-            // 현 시간에 교차로에 대기중인 차들이 있다면
-            // 우측에 차가 있는지 확인
-            while(!deque.isEmpty()) {
-                // 현재 차량 [번호, 시간, 위치]
-                Car car = deque.pollFirst();
-                String right = map.get(car.loc);
-                String reverseRight = map.get(right);
-                boolean b = false;
-                for(Car c : deque) {
-                    if(c.loc.equals(right) || reverseRight.equals(car.loc)){    // 우측에 차가 있다면
-                        b = true;
-                        break;
-                    }
-                }
+            // 우측 차량 여부 확인 및 처리
+            while (!nowCar.isEmpty()) {
+                Car car = nowCar.pollFirst(); // 현재 차량
+                String right = map.get(car.loc); // 우측 도로
+                Deque<Car> rightQueue = getQueue(right); // 우측 도로 큐
 
-                if(b){
+                // 우측 도로에 차량이 없다면 통과
+                if (rightQueue.isEmpty() || rightQueue.peek().time > curTime) {
+                    answer[car.no] = curTime; // 통과 시간 기록
+                    curTime++; // 시간 증가
+                } else {
+                    // 우측 차량 때문에 대기, 다시 해당 도로로 삽입
                     pushRoad(car.loc, car.no, car.time, -1);
-                    continue;
                 }
-                answer[car.no] = car.time;
-                curTime++;
             }
-
         }
+
         return answer;
     }
+
+    // 도로 이름으로 큐를 반환하는 메서드
+    private Deque<Car> getQueue(String road) {
+        switch (road) {
+            case "A": return roadA;
+            case "B": return roadB;
+            case "C": return roadC;
+            case "D": return roadD;
+        }
+        return null;
+    }
+
 
     Map<String, String> map = new HashMap<>();
     public void makeMap() {
