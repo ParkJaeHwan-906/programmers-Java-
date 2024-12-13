@@ -9,6 +9,7 @@ import java.io.*;
 // https://softeer.ai/practice/6248
 public class no_6248 {
     static ArrayList<Integer>[] road;
+    static ArrayList<Integer>[] reverseRoad;
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
@@ -17,102 +18,83 @@ public class no_6248 {
         int n = Integer.parseInt(st.nextToken());
         int m = Integer.parseInt(st.nextToken());
 
+        // road와 reverseRoad의 크기를 n으로 초기화
         road = new ArrayList[n];
-        for(int i = 0; i < n; i++){
+        reverseRoad = new ArrayList[n];
+        for (int i = 0; i < n; i++) {
             road[i] = new ArrayList<>();
+            reverseRoad[i] = new ArrayList<>();
         }
 
         // 도로 정보 저장
-        while(m > 0) {
+        while (m > 0) {
             st = new StringTokenizer(br.readLine());
-            int a = Integer.parseInt(st.nextToken())-1;
-            int b = Integer.parseInt(st.nextToken())-1;
+            int a = Integer.parseInt(st.nextToken()) - 1;
+            int b = Integer.parseInt(st.nextToken()) - 1;
 
+            // a에서 b로 가는 도로와 b에서 a로 가는 역방향 도로 추가
             road[a].add(b);
+            reverseRoad[b].add(a);
             m--;
         }
 
-//        //  ✅ 도로 표현
-//        for(int i = 0; i < road.length; i++){
-//            System.out.println(i+1 + "연결");
-//            for(int j=0; j < road[i].size(); j++){
-//                System.out.print(road[i].get(j)+1+" ");
-//            }
-//            System.out.println();
-//        }
-
+        // 출발지와 도착지 입력 받기
         st = new StringTokenizer(br.readLine());
-        int start = Integer.parseInt(st.nextToken())-1;
-        int end = Integer.parseInt(st.nextToken())-1;
+        int start = Integer.parseInt(st.nextToken()) - 1;
+        int end = Integer.parseInt(st.nextToken()) - 1;
+        br.close();
 
         no_6248 problem = new no_6248();
-        System.out.println(problem.solution(start, end));
+        int result = problem.solution(start, end);
+        bw.write(String.valueOf(result));
+        bw.flush();
+        bw.close();
     }
 
-    Set<Integer> sToE = new HashSet<>();
-    Set<Integer> eToS = new HashSet<>();
+    boolean[] visited1; // 출근하면서 갈 수 있는 곳
+    boolean[] visited2; // 각 정점에서 s 로 갈 수 있는지
+    boolean[] visited3; // 퇴근하면서 갈 수 있는 곳
+    boolean[] visited4; // 각 정점에서 e로 갈 수 있는지 여부
     public int solution(int s, int e) {
-        dfs(s, e, new boolean[road.length], 1);
-//        System.out.println();
-        dfs(e, s, new boolean[road.length], -1);
+        visited1 = new boolean[road.length];
+        visited2 = new boolean[road.length];
+        visited3 = new boolean[road.length];
+        visited4 = new boolean[road.length];
 
-//        System.out.println("출근길");
-//        for(int i : sToE) {
-//            System.out.print(i+" ");
-//        }
-//        System.out.println();
-//        System.out.println("퇴근길");
-//        for(int i : eToS) {
-//            System.out.print(i+" ");
-//        }
+        // 회사에 도착한다면
+        visited1[e] = true;
+        dfs(s, visited1, road);  // 출근길 탐색
 
-//        System.out.println(eToS.contains(0));
+        dfs(e, visited2, reverseRoad);
+
+        // 집에 도착한다면
+        visited3[s] = true;
+        dfs(e, visited3, road); // 퇴근길 탐색
+
+        dfs(e, visited4, reverseRoad);
+
         return findDuplicated(s, e);
     }
 
-    public void dfs(int s, int e, boolean[] visited, int flag) {
-        // 경로를 추가
-        if (flag == -1) {  // 퇴근
-            if(!eToS.contains(s)){
-                eToS.add(s);
-            }
-        } else {    // 출근
-            if(!sToE.contains(s)){
-                sToE.add(s);
-            }
+    public void dfs(int s, boolean[] visited, ArrayList<Integer>[] list) {
+        if(visited[s]) return;
+
+        visited[s] = true;
+        for(int i : list[s]) {
+            if(visited[i]) continue;
+
+            dfs(i, visited, list);
         }
-
-        if (s == e) { // 목적지에 도착한 경우
-            return;
-        }
-
-        visited[s] = true; // 방문 처리
-
-        for (int next : road[s]) {
-            if (visited[next]) continue; // 이미 방문한 경우 스킵
-
-            // 다음 노드가 유효한 경로로 연결되는 경우만 기록
-            dfs(next, e, visited, flag);
-
-        }
-
-        visited[s] = false; // 방문 해제 (백트래킹)
     }
 
-    private int findDuplicated(int s, int e) {
-        int answer = 0;
-        if(sToE.size() > eToS.size()){
-            for(int i : sToE){
-                if(i == e || i == s || !eToS.contains(i)) continue;
-                answer++;
-            }
-        } else{
-            for(int i : eToS){
-                if(i == e || i == s || !sToE.contains(i)) continue;
-                answer++;
-            }
-        }
 
-        return answer;
+    // 공통 노드를 찾아서 개수를 반환
+    public int findDuplicated(int s, int e) {
+        int cnt = 0;
+        for (int i = 0; i < visited1.length; i++) {
+            if (i == s || i == e) continue;  // 출발지와 목적지는 제외
+            if (visited1[i] && visited2[i] && visited3[i] && visited4[i]) cnt++;  // 두 경로 모두에 포함된 노드 개수
+        }
+        return cnt;
     }
 }
