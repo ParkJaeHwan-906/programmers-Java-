@@ -164,15 +164,24 @@ public class no_6256 {
 
                     String right = map.get(c.loc);
                     for(Car car : nowCar) {
-                        if(car.loc.equals(right)){
+//                        ⚠️ 우측에 존재하는 차량을 선행시킨다.
+
+                        String reverseRight = map.get(car.loc);
+
+                        if (car.loc.equals(right)) { // 현재 차량(c)의 우측에 다른 차량(car)이 있는 경우
                             isOk = false;
+                            // 현재 차량(c)을 다시 대기열로 이동
+                            pushRoad(c.loc, c.no, nowTime + 1, -1);
+                            break;
+                        } else if (c.loc.equals(reverseRight)) { // 현재 차량(c)이 특정 차량(car)의 우측일 경우
+                            nowCar.remove(car); // nowCar에서 제거
+                            pushRoad(car.loc, car.no, nowTime + 1, -1); // 특정 차량(car)을 다시 대기열로 이동
                             break;
                         }
                     }
 
-                    // 우측에 차가 있다면 대기한다.
+                    // 현재 차량이 다시 대기열로 이동하는 경우
                     if(!isOk){
-                        pushRoad(c.loc, c.no, nowTime+1, -1);
                         continue;
                     }
 
