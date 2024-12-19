@@ -91,11 +91,6 @@ public class no_6256 {
         int nowTime = -1;
         // 교차로에 모든 차량이 통과할 때까지 반복
         while (!roadA.isEmpty() || !roadB.isEmpty() || !roadC.isEmpty() || !roadD.isEmpty()) {
-            System.out.println("answer : ");
-            for(int i : answer){
-                System.out.print(i+" ");
-            }
-            System.out.println();
             // 각 도로의 첫 번째 차량의 진입시간
             int timeA = !roadA.isEmpty() ? roadA.peekFirst().time : Integer.MAX_VALUE;
             int timeB = !roadB.isEmpty() ? roadB.peekFirst().time : Integer.MAX_VALUE;
@@ -142,12 +137,6 @@ public class no_6256 {
             }
             if(nowTime == timeD) {
                 nowCar.offerFirst(roadD.pollFirst());
-            }
-
-            System.out.println("현시간 : "+nowTime);
-            System.out.println("nowCar : ");
-            for(Car c : nowCar){
-                System.out.printf("%s : %d번 차량\n", c.loc, c.no);
             }
 
             if(nowCar.size() == 4){ // 교착상태
