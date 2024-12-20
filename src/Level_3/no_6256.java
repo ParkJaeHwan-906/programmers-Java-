@@ -91,93 +91,71 @@ public class no_6256 {
         int nowTime = -1;
         // 교차로에 모든 차량이 통과할 때까지 반복
         while (!roadA.isEmpty() || !roadB.isEmpty() || !roadC.isEmpty() || !roadD.isEmpty()) {
+            // 현재 시간에 진입 가능한 차량을 저장할 리스트
+            Deque<Car> nowCar = new ArrayDeque<>();
+
             // 각 도로의 첫 번째 차량의 진입시간
             int timeA = !roadA.isEmpty() ? roadA.peekFirst().time : Integer.MAX_VALUE;
             int timeB = !roadB.isEmpty() ? roadB.peekFirst().time : Integer.MAX_VALUE;
             int timeC = !roadC.isEmpty() ? roadC.peekFirst().time : Integer.MAX_VALUE;
             int timeD = !roadD.isEmpty() ? roadD.peekFirst().time : Integer.MAX_VALUE;
 
+            // 가장 빠른 진입시점 찾기
+            int minTime = findMinTime(timeA, timeB, timeC, timeD);
+
             // 현 시점(nowTime) 에 진입하는 차량을 기록해둔다.
             if(nowTime == timeA) {
                 Car c = roadA.pollFirst();
-                pushRoad(c.loc, c.no, nowTime+1, -1);
-                continue;
+                nowCar.offerFirst(c);
             }
             if(nowTime == timeB) {
                 Car c = roadB.pollFirst();
-                pushRoad(c.loc, c.no, nowTime+1, -1);
-                continue;
+                nowCar.offerFirst(c);;
             }
             if(nowTime == timeC) {
                 Car c = roadC.pollFirst();
-                pushRoad(c.loc, c.no, nowTime+1, -1);
-                continue;
+                nowCar.offerFirst(c);
             }
             if(nowTime == timeD) {
                 Car c = roadD.pollFirst();
-                pushRoad(c.loc, c.no, nowTime+1, -1);
-                continue;
+                nowCar.offerFirst(c);
             }
 
-            // 가장 빠른 시점 찾기
-            nowTime = findMinTime(timeA, timeB, timeC, timeD);
 
-            // 현재 시간에 진입 가능한 차량을 저장할 리스트
-            Deque<Car> nowCar = new ArrayDeque<>();
-
-            // 현 시점(nowTime) 에 진입하는 차량을 기록해둔다.
-            if(nowTime == timeA) {
-                nowCar.offerFirst(roadA.pollFirst());
-            }
-            if(nowTime == timeB) {
-                nowCar.offerFirst(roadB.pollFirst());
-            }
-            if(nowTime == timeC) {
-                nowCar.offerFirst(roadC.pollFirst());
-            }
-            if(nowTime == timeD) {
-                nowCar.offerFirst(roadD.pollFirst());
-            }
 
             if(nowCar.size() == 4){ // 교착상태
                 while(!nowCar.isEmpty()){
                     Car c = nowCar.pollFirst();
 
                     answer[c.no] = -1;
+                    break;
                 }
-            } else {    // 차량 통행이 가능하다면
+            } else if(nowCar.isEmpty()) {   // 현재 대기중인 차량이 없다면
+                nowTime = minTime;
+            }else {    // 차량 통행이 가능하다면
                 // 1. 각 우측을 확인해야한다.
                 while(!nowCar.isEmpty()) {
                     Car c = nowCar.pollFirst();
-                    boolean isOk = true;
+
+                    boolean go = true;
 
                     String right = map.get(c.loc);
-                    for(Car car : nowCar) {
-//                        ⚠️ 우측에 존재하는 차량을 선행시킨다.
 
-                        String reverseRight = map.get(car.loc);
-
-                        if (car.loc.equals(right)) { // 현재 차량(c)의 우측에 다른 차량(car)이 있는 경우
-                            isOk = false;
-                            // 현재 차량(c)을 다시 대기열로 이동
-                            pushRoad(c.loc, c.no, nowTime + 1, -1);
-                            break;
-                        } else if (c.loc.equals(reverseRight)) { // 현재 차량(c)이 특정 차량(car)의 우측일 경우
-                            nowCar.remove(car); // nowCar에서 제거
-                            pushRoad(car.loc, car.no, nowTime + 1, -1); // 특정 차량(car)을 다시 대기열로 이동
+                    for(Car c1 : nowCar){
+                        if(right.equals(c1.loc)){
+                            go = false;
                             break;
                         }
+                        if(!go){    // 통행이 불가할 경우
+                            pushRoad(c.loc, c.no, c.time, -1);
+                            continue;
+                        }
+                        answer[c.no] = nowTime;
                     }
 
-                    // 현재 차량이 다시 대기열로 이동하는 경우
-                    if(!isOk){
-                        continue;
-                    }
-
-                    answer[c.no] = nowTime;
                 }
             }
-
+            nowTime = minTime;
         }
 
         return answer;
