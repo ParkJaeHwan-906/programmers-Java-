@@ -58,4 +58,11 @@ public class no_6257 {
         return answer;
     }
 
+    // ⚠️ 참고
+    // https://snapcode.tistory.com/entry/%EC%86%8C%ED%94%84%ED%8B%B0%EC%96%B4-%ED%86%B5%EA%B7%BC%EB%B2%84%EC%8A%A4-%EC%B6%9C%EB%B0%9C-%EC%88%9C%EC%84%9C-%EA%B2%80%EC%A6%9D%ED%95%98%EA%B8%B0-%EC%9E%90%EB%B0%94-%ED%92%80%EC%9D%B4-dp-DP-HSAT-4%ED%9A%8C-%EC%A0%95%EA%B8%B0-%EC%BD%94%EB%94%A9-%EC%9D%B8%EC%A6%9D%ED%8F%89%EA%B0%80-%EA%B8%B0%EC%B6%9C
+    public long solution() {
+        // A < B 조건은 무시하자
+        // 📌 A > C 가 핵심
+    }
+
 }
