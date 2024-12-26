@@ -1,5 +1,6 @@
 package Level_3;
 
+import java.sql.Array;
 import java.util.*;
 import java.io.*;
 
@@ -24,6 +25,8 @@ public class no_6257 {
         }
 
         System.out.println(problem.problemUnderStand());
+
+        System.out.println(problem.solution());
     }
 
     // 문제 이해하기
@@ -58,11 +61,44 @@ public class no_6257 {
         return answer;
     }
 
-    // ⚠️ 참고
-    // https://snapcode.tistory.com/entry/%EC%86%8C%ED%94%84%ED%8B%B0%EC%96%B4-%ED%86%B5%EA%B7%BC%EB%B2%84%EC%8A%A4-%EC%B6%9C%EB%B0%9C-%EC%88%9C%EC%84%9C-%EA%B2%80%EC%A6%9D%ED%95%98%EA%B8%B0-%EC%9E%90%EB%B0%94-%ED%92%80%EC%9D%B4-dp-DP-HSAT-4%ED%9A%8C-%EC%A0%95%EA%B8%B0-%EC%BD%94%EB%94%A9-%EC%9D%B8%EC%A6%9D%ED%8F%89%EA%B0%80-%EA%B8%B0%EC%B6%9C
-    public long solution() {
-        // A < B 조건은 무시하자
-        // 📌 A > C 가 핵심
-    }
+    // ⚠️ 풀이 참고
+    // A < B 조건은 무시하자
+    // 📌 A > C 가 핵심
 
+    // ???? 구간합? (DP?)  ????
+
+    /*
+    arr[x][j] => j 번째 이후에 있는 것들 중, x 보다 작은 것들의 수
+
+    => 버스 번호가 담긴 리스트를 끝에서부터 순회하면 O(1) ( 효율적 ✅ )
+    => 총 O(n^n) 시간 소요
+     */
+    public long solution() {
+        long answer = 0;
+
+        // 첫 번째 인덱스부터 n-3 까지 순회
+        for(int i=0; i<n-2; i++){
+            long stack = 0;
+            List<Integer> list = new ArrayList<>();
+
+            // i+1 에서 n-1 까지 순회
+            for(int j=i+1; j<n; j++){
+                if(bus[i] < bus[j]) {   // i < j 인 경우 ( 문제 조건 )
+                    list.add(1);
+                } else{
+                    list.add(0);
+                }
+            }
+
+            for(int count : list) {
+                if(count == 1) {
+                    stack++;
+                } else {
+                    answer += stack;
+                }
+            }
+        }
+
+        return answer;
+    }
 }
