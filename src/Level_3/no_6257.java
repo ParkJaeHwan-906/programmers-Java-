@@ -1,6 +1,5 @@
 package Level_3;
 
-import java.sql.Array;
 import java.util.*;
 import java.io.*;
 
@@ -74,27 +73,29 @@ public class no_6257 {
     => 총 O(n^n) 시간 소요
      */
     public long solution() {
+        // ✅ i < j < k
         long answer = 0;
 
         // 첫 번째 인덱스부터 n-3 까지 순회
-        for(int i=0; i<n-2; i++){
-            long stack = 0;
-            List<Integer> list = new ArrayList<>();
+        for(int i=0; i<n-2; i++){   // i 는 첫 번째 값 인덱스
+            long stack = 0; // 조건을 만족하는 중간 값 누적
+            List<Integer> list = new ArrayList<>(); // i 를 기준으로 j 와 k 의 조건을 기록
 
             // i+1 에서 n-1 까지 순회
-            for(int j=i+1; j<n; j++){
-                if(bus[i] < bus[j]) {   // i < j 인 경우 ( 문제 조건 )
-                    list.add(1);
-                } else{
-                    list.add(0);
+            for(int j=i+1; j<n; j++){   // j 는 두 번째 값 인덱스
+                if(bus[i] < bus[j]) {   // i < j 인 경우 ( 📌 bus[i] < bus[j] )
+                    list.add(1);    // 만족하면 1 추기
+                } else{ // ( 📌 bus[i] > bus[k] ) 
+                    list.add(0);    // 아니면 0 추가
                 }
             }
 
+            // 리스트를 기반으로 조합 계산
             for(int count : list) {
                 if(count == 1) {
-                    stack++;
+                    stack++;    // 조건을 만족하는 값의 개수를 누적 ( bus[i] < bus[j] )
                 } else {
-                    answer += stack;
+                    answer += stack;    // 현재까지 누적된 조건 만족 개수를 더함 ( bus[i] > bus[k] )
                 }
             }
         }
