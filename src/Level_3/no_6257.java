@@ -85,7 +85,7 @@ public class no_6257 {
             for(int j=i+1; j<n; j++){   // j 는 두 번째 값 인덱스
                 if(bus[i] < bus[j]) {   // i < j 인 경우 ( 📌 bus[i] < bus[j] )
                     list.add(1);    // 만족하면 1 추기
-                } else{ // ( 📌 bus[i] > bus[k] ) 
+                } else{ // ( 📌 bus[i] > bus[k] )
                     list.add(0);    // 아니면 0 추가
                 }
             }
