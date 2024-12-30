@@ -7,27 +7,12 @@ import java.io.*;
 // [HSAT 4회 정기 코딩 인증평가 기출] 슈퍼컴퓨터 클러스터
 // https://softeer.ai/practice/6252
 public class no_6252 {
-
-    static class Computer implements Comparable<Computer> {
-        int idx;
-        long power;
-
-        public Computer(int idx, long power) {
-            this.idx = idx;
-            this.power = power;
-        }
-
-        @Override
-        public int compareTo(Computer c){
-            return (int) (this.power - c.power);
-        }
-    }
-
     static int n;
     static long b;
-//    static PriorityQueue<Computer> computer = new PriorityQueue<>();
-    static long[] computer
+    static long[] computer;
     public static void main(String[] args) throws IOException {
+        no_6252 problem = new no_6252();
+
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
@@ -38,30 +23,51 @@ public class no_6252 {
         computer = new long[n];
         st = new StringTokenizer(br.readLine());
         for(int i=0; i<n; i++) {
-//            computer.offer(new Computer(i, Long.parseLong(st.nextToken())));
             computer[i] = Long.parseLong(st.nextToken());
         }
+        br.close();
 
         // 오름차순 정렬
         Arrays.sort(computer);
+
+        bw.write(String.valueOf(problem.solution()));
+        bw.flush();
+        bw.close();
     }
 
     // 5 5 6 1 =? 1 5 5 6
-    public int solution() {
-        // 가장 성능이 낮은 컴퓨터
-        long lowPower = computer[0];
+    public long solution() {
+       long answer = 0;
 
-        // 차례로 성능을 비교함
-        for(int i=1; i<n; i++){
+       long l = computer[0];    // 최소값 초기화
+       long r = computer[n-1] + (long) + Math.sqrt(b);  // 최대값 + B 원으로 최대 업그레이트 할 수 있는 성능
 
+        while(l <= r) {
+            long mid = l + (r-l) / 2;   // 오버플로우 방지
+
+            if(powerUp(mid)) {
+                l = mid + 1;
+                answer = mid;
+            } else {
+                r = mid - 1;
+            }
         }
+
+        return answer;
     }
 
-    private boolean powerUp(int idx){
-        long maxPower = computer[idx];
+    private boolean powerUp(long mid) {
+        long cost = 0;  // mid 를 만들기 위한 비용 계산
 
-        for(int i=idx-1; i>-1; i--){
+        for(long c : computer) {
+            if(c < mid) {   // 최소가 되야할 값보다 작은 수는 업그레이트 비용 계산해줌
+                cost += (long) Math.pow((mid - c), 2);
 
+
+                if(cost > b) return false;
+            }
         }
+
+        return true;
     }
 }
