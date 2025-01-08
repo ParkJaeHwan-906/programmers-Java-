@@ -31,12 +31,6 @@ public class no_1868 {
                     map[x][y] = s.charAt(y);
                 }
             }
-            for(char[] cArr : map) {
-                for(char c : cArr){
-                    System.out.print(c);
-                }
-                System.out.println();
-            }
             sb.append(problem.solution()).append("\n");
         }
         br.close();
@@ -64,19 +58,22 @@ public class no_1868 {
             }
         }
 
-        for(char[] cArr : map) {
-            for(char c : cArr){
-                System.out.print(c);
-            }
-            System.out.println();
-        }
-
         // 처음부터 탐색 ( 최소 클릭 구하기 )
         for(int x=0; x<n; x++){
             for(int y=0; y<n; y++){
                 // 주변에 지뢰가 없고, 방문하지 않은 곳 ( 연쇄 클릭 )
                 if(map[x][y] == '0' && !visited[x][y]) {
                     dfs(x, y);
+                    answer++;
+                }
+            }
+        }
+
+        // 나머지 위치 처리
+        for(int x=0; x<n; x++){
+            for(int y=0; y<n; y++){
+                // 아직 방문하지 않은 위치 처리
+                if(!visited[x][y]) {
                     answer++;
                 }
             }
@@ -92,21 +89,24 @@ public class no_1868 {
             int ny = y + dy[i];
 
             // 범위를 벗어나거나, 방문한 이력이 있는 곳이면
-            if(nx < 0 || ny < 0 || nx >= n || ny >= n || visited[nx][ny]) continue;
+            if(nx < 0 || ny < 0 || nx >= n || ny >= n) continue;
             if(map[nx][ny] == '*') cnt++;
         }
 
-        map[x][y] = String.valueOf(cnt).charAt(0);
+        map[x][y] = (char) (cnt+'0');
     }
 
     // 주어진 위치에서 시작해 연결된 빈 칸을 클릭
     private void dfs(int x, int y) {
         visited[x][y] = true; // 현재 칸을 방문 처리
         for(int i = 0; i < 8; i++) {
+            // 이동 좌표
             int nx = x + dx[i];
             int ny = y + dy[i];
+
             if(nx < 0 || ny < 0 || nx >= n || ny >= n || visited[nx][ny]) continue; // 범위를 벗어나거나 이미 방문함
-            visited[nx][ny] = true; // 현재 칸을 방문 처리
+
+            visited[nx][ny] = true; // 이동한 위치 방문 처리
             if(map[nx][ny] == '0') dfs(nx, ny); // 인접한 빈 칸 탐색
         }
     }
