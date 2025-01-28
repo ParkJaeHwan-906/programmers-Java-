@@ -84,7 +84,7 @@ public class no_7594_2 {
 
             // 현재 쌍을 방문 처리
             visited[x][y] = true; visited[nx][ny] = true;
-            // 계속 탐샘
+            // 계속 탐색
             findMaxValue(pairCount+1, sum + (map[x][y] + map[nx][ny]), targetNum);
 
             // 현재 쌍을 방문 처리 해제
