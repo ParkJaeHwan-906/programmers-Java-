@@ -62,7 +62,11 @@ public class no_6256_2 {
                 }
             }
 
-            int count = Arrays.stream(nowRoad).sum();   // 현재 대기중인 차량의 수
+            // 현재 대기중인 차량의 수
+            int count = 0;
+            for(int i : nowRoad) {
+                count += i;
+            }
 
             if(count == 0) {  // 대기중인 차량이 없음
                 cur = minTime;
