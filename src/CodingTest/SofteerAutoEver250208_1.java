@@ -70,7 +70,11 @@ public class SofteerAutoEver250208_1 {
             }
 
             // 사이클을 구분하여 계산한다.
-            answer += cycle ? count - (count / 2) - 1 : count > 2 ? count - (count / 2) : 1;
+            if(cycle) {
+                answer += count % 2 == 0 ? count - (count/2) : count - (count/2)-1;
+            } else {
+                answer += count > 2 ? count - (count/2) : 1;
+            }
         }
         return answer;
     }
@@ -83,4 +87,21 @@ public class SofteerAutoEver250208_1 {
 
 가장 많은 정점을 선택하려 한다.
 이때 선택된 정점과 연결되어 있는 정점은 선택할 수 없다.
+
+ex)
+6 4
+1 2
+2 3
+3 4
+4 5
+-> 4
+
+7 6
+1 2
+1 3
+2 3
+4 5
+5 6
+6 7
+-> 3
  */
