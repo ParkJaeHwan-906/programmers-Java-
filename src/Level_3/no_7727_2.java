@@ -12,7 +12,6 @@ public class no_7727_2 {
     static int mapSize, friendNum;
     static int[][] map;
     static int[][] friends;
-    static boolean[][] visited;
     public static void main(String[] args) throws IOException {
         br = new BufferedReader(new InputStreamReader(System.in));
         bw = new BufferedWriter(new OutputStreamWriter(System.out));
@@ -32,7 +31,6 @@ public class no_7727_2 {
         friendNum = Integer.parseInt(st.nextToken());
 
         map = new int[mapSize][mapSize];
-        visited = new boolean[mapSize][mapSize];
         friends = new int[friendNum][2];
 
         for(int x=0; x<mapSize; x++) {
@@ -54,8 +52,12 @@ public class no_7727_2 {
     int answer;
     public int getMax() {
         answer = Integer.MIN_VALUE;
-
-
+        // 첫번째 사람
+        int x = friends[0][0];
+        int y = friends[0][1];
+        int defaultSum = map[x][y];
+        map[x][y] = 0;
+        work(x, y, 0, defaultSum, 0);
 
         return answer;
     }
@@ -68,9 +70,10 @@ public class no_7727_2 {
                 int nx = friends[workIdx][0];
                 int ny = friends[workIdx][1];
 
-                visited[nx][ny] = true;
-
-                work(nx, ny, workIdx, sum + map[nx][ny], 0);
+                int tmp = map[nx][ny];
+                map[nx][ny] = 0;
+                work(nx, ny, workIdx, sum + tmp, 0);
+                map[nx][ny] = tmp;
             } else {    // 사람 끝
                 answer = Math.max(answer, sum);
             }
@@ -83,14 +86,13 @@ public class no_7727_2 {
 
             // 범위를 벗어나는 경우
             if(nx < 0 || ny < 0 || nx >= mapSize || ny >= mapSize) continue;
-            // 이미 수확한 경우
-            if(visited[nx][ny]) continue;
 
             // 수확 처리
-            visited[nx][ny] = true;
-            work(nx, ny, workIdx, sum+map[nx][ny], depth+1);
+            int tmp = map[nx][ny];
+            map[nx][ny] = 0;
+            work(nx, ny, workIdx, sum+tmp, depth+1);
             // 처리 해제
-            visited[nx][ny] = false;
+            map[nx][ny] = tmp;
         }
     }
 }
