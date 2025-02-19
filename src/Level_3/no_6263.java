@@ -1,7 +1,14 @@
 package Level_3;
 
-import java.util.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Stack;
+import java.util.StringTokenizer;
 
 // Softeer Lv.3
 // [21년 재직자 대회 예선] 로드 밸런서 트래픽 예측
@@ -18,18 +25,25 @@ public class no_6263 {
         init();
 
         // 입력 테스트
-        for(int idx=1; idx<=nodes; idx++) {
-            System.out.print(idx+ " : ");
-            for(int[] nodeArr : servers[idx]) {
-                for(int i : nodeArr) {
-                    System.out.print(i+" ");
-                }
-            }
-            System.out.println();
-        }
+//         for(int idx=1; idx<=nodes; idx++) {
+//             System.out.print(idx+ " : ");
+//             for(int[] nodeArr : servers[idx]) {
+//                 for(int i : nodeArr) {
+//                     System.out.print(i+" ");
+//                 }
+//             }
+//             System.out.println();
+//         }
 
         no_6263 problem = new no_6263();
-        problem.loadBalance();
+        StringBuilder sb = new StringBuilder();
+        long[] answer = problem.loadBalance();
+        for(int idx=1; idx<=nodes; idx++) {
+        	sb.append(answer[idx]).append(' ');
+        }
+        bw.write(sb.toString());
+        bw.flush();
+        bw.close();
 
     }
 
@@ -71,7 +85,14 @@ public class no_6263 {
 //            System.out.print(inEdges[idx]+ " ");
 //        }
 
-        return new long[0];
+        topologySort();
+        // 위상 정렬 확인
+//        for(int i : sortedNodes) {
+//            System.out.print(i+" ");
+//        }
+//        System.out.println();
+
+        return calcTraffic();
     }
 
     // 노드로 들어오는 간선의 개수를 구한다.
@@ -85,8 +106,12 @@ public class no_6263 {
         }
     }
 
+    List<Integer> sortedNodes;
     // 위상 정렬을 수행한다.
+    // inEdge 사용 
     private void topologySort() {
+        sortedNodes = new ArrayList<>();
+
         // 위상 정렬을 위한 Stack
         Stack<Integer> st = new Stack<>();
 
@@ -98,10 +123,53 @@ public class no_6263 {
         }
 
         while(!st.isEmpty()) {
+            // 현재 노드를 가져온다.
             int nowNode = st.pop();
+            // 정렬 리스트에 추가한다.
+            sortedNodes.add(nowNode);
 
+            // 현재 노드와 연결된 노드들의 inEdge 수를 줄여준다.
+            for(int[] chlidNodes : servers[nowNode]) {
+                for(int childNode : chlidNodes) {
+                    inEdges[childNode]--;
 
+                    // 만약 자식노드에 들어오는 간선이 없다면 Stack 에 넣어준다.
+                    if(inEdges[childNode] == 0) {
+                        st.push(childNode);
+                    }
+                }
+            }
         }
+    }
+
+
+    private long[] calcTraffic() {
+    	long[] traffic = new long[nodes+1];	// 각 서버 별 할당되는 업무량을 기록 
+    	traffic[1] = tasks;	// 루트 노드 (1) 에 모든 업무 할당  
+    	for(int server : sortedNodes) {
+    		long task = traffic[server];
+//    		// 현재 노드와 연결 (나가는 )노드가 없다면 
+    		if(servers[server].isEmpty()) continue;
+    		
+    		long div = (long) task/servers[server].get(0).length;
+    		long remain = (long)task%servers[server].get(0).length;
+    		
+    		// 각 자식 노드들에게 나누어 떨어지는 업무의 수
+    		for(int child : servers[server].get(0)) {
+    			traffic[child] += div;
+    		}
+    		
+    		// 남아있는 업무의 수를 RR 방식을 사용하여 자식 노드에게 전달
+    		for(int r=0; r<remain; r++) {
+    			traffic[servers[server].get(0)[r]]++;
+    		}
+    	}
+    	
+    	
+    	for(long l : traffic) {
+    		System.out.print(l+" ");
+    	}
+    	return traffic;
     }
 }
 
