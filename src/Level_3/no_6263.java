@@ -5,10 +5,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
-import java.util.StringTokenizer;
+import java.util.*;
 
 // Softeer Lv.3
 // [21년 재직자 대회 예선] 로드 밸런서 트래픽 예측
@@ -16,30 +13,29 @@ import java.util.StringTokenizer;
 public class no_6263 {
     static BufferedReader br;
     static BufferedWriter bw;
-    static int nodes;   // N : 노드의 개수 ( 로드 밸런서, 워커 노드 모두 포함 )
-    static int tasks;   // K : 주어지는 요청의 수
-    static ArrayList<int[]>[] servers; // P : 서버 그래프 구성
     public static void main(String[] args) throws IOException {
         br = new BufferedReader(new InputStreamReader(System.in));
         bw = new BufferedWriter(new OutputStreamWriter(System.out));
-        init();
 
-        // 입력 테스트
-//         for(int idx=1; idx<=nodes; idx++) {
-//             System.out.print(idx+ " : ");
-//             for(int[] nodeArr : servers[idx]) {
-//                 for(int i : nodeArr) {
-//                     System.out.print(i+" ");
-//                 }
-//             }
-//             System.out.println();
-//         }
+        // 입력
+        init();
+        // 입력 확인 ✅
+//        for(int server=1; server <= serversNum; server++) {
+//            System.out.print(server + "번 서버 (크기 : " + servers[server].length+") : ");
+//            for(int i : servers[server]) {
+//                System.out.print(i + " ");
+//            }
+//            System.out.println();
+//        }
+
+
 
         no_6263 problem = new no_6263();
+        long[] distributionTasks = problem.getDistributionTask();
+
         StringBuilder sb = new StringBuilder();
-        long[] answer = problem.loadBalance();
-        for(int idx=1; idx<=nodes; idx++) {
-        	sb.append(answer[idx]).append(' ');
+        for(int server=1; server <= serversNum; server++) {
+            sb.append(distributionTasks[server]).append(' ');
         }
         bw.write(sb.toString());
         bw.flush();
@@ -47,130 +43,118 @@ public class no_6263 {
 
     }
 
-    public static void init() throws IOException{
+    static int serversNum;  //  서버의 개수 ( N )
+    static long tasks;   // 요청의 수 ( K ) - 10^18
+    static int[][] servers; // 서버의 연결 관계를 저장
+    private static void init() throws IOException{
         StringTokenizer st = new StringTokenizer(br.readLine().trim());
-        nodes = Integer.parseInt(st.nextToken());
-        tasks = Integer.parseInt(st.nextToken());
+        serversNum = Integer.parseInt(st.nextToken());
+        tasks = Long.parseLong(st.nextToken());
 
-        servers = new ArrayList[nodes+1];   // 쉬운 접근을 위해 idx+1
-        for(int idx=0; idx<=nodes; idx++) { // 배열 초기화
-            servers[idx] = new ArrayList<>();
-        }
-
-        // 서버 정보 입력
-        for(int idx=1; idx<=nodes; idx++) {
+        servers = new int[serversNum+1][];  // 인덱스 접근 통일을 위해 +1 크기로 설정함
+        for(int server=1; server <= serversNum; server++) {
             st = new StringTokenizer(br.readLine().trim());
 
-            // 연결 노드의 개수 (0 이면 워커 노드, 1이상 로드밸런서)
-            int connNodes = Integer.parseInt(st.nextToken());
-            if(connNodes == 0) continue;
-            int[] conn = new int[connNodes];
-            for(int i=0; i<connNodes; i++) {
-                conn[i] =  Integer.parseInt(st.nextToken());
+            int connSize = Integer.parseInt(st.nextToken());
+            int[] connArr = new int[connSize];
+            for(int conn=0; conn < connSize; conn++) {
+                connArr[conn] = Integer.parseInt(st.nextToken());
             }
-            servers[idx].add(conn);
+            servers[server] = connArr;
         }
     }
 
-    int[] inEdges;
-    private long[] loadBalance() {
-        /*
-        위상 정렬을 위해 들어오는 간선의 개수를 구해
-        왼쪽부터 오른쪽으로 정렬한다.
-         */
-        inEdges = new int[nodes+1]; // 노드로 들어오는 간선의 개수를 구한다.
+    // 위상정렬을 사용하여 상위노드부터, 하위노드로 업무를 분배한다.
+    private long[] getDistributionTask() {    // 각 노드별로 분포되어있는 업무를 가져온다.
+        // 노드로 들어오는 간선의 수를 구한다.
         calcInEdge();
-        // inEdges 확인
-//        for(int idx=1; idx <= nodes; idx++) {
-//            System.out.print(inEdges[idx]+ " ");
+        // inEdge 확인 ✅`
+//        for(int server=1; server<=serversNum; server++) {
+//            System.out.print(inEdge[server] + " ");
+//        }
+        // 위상 정렬 수행
+        int[] sortedServer = sortByInEdge();
+        // 위상정렬 확인 ✅
+//        for(int server : sortedServer) {
+//            System.out.print(server+" ");
 //        }
 
-        topologySort();
-        // 위상 정렬 확인
-//        for(int i : sortedNodes) {
-//            System.out.print(i+" ");
-//        }
-//        System.out.println();
 
-        return calcTraffic();
+        long[] distributionTasks = new long[serversNum+1];  // 분배되어 있는 업무 상태를 저장할 배열
+        distributionTasks[1] = tasks;   // 루트 노드로 모든 업무가 요청된다.
+        for(int server : sortedServer) {    // 상위노드부터 하위노드로 업무를 분배한다.
+            int connSize = servers[server].length; // 현재 노드와 연결되어 있는 자식 노드의 수를 가져온다.
+
+            if(connSize == 0) continue; // 더 이상 업무를 분배할 노드가 없음
+
+            // 업무를 분배할 노드가 있음
+                // 각 자식들에게 균등하게 분배한다.
+                // 남은 업무는 RR 방식을 사용해 순서대로 부여한다.
+            long div = distributionTasks[server] / connSize;    // 균등하게 분배될 업무의 양
+            long remain = distributionTasks[server] % connSize; // RR 방식으로 분배될 업무의 양
+
+            // 1. 균등하게 분배한다.
+            for(int child : servers[server]) {  // 각 자식노드들에게 업무를 균등하게 분배한다.
+                distributionTasks[child] += div;
+            }
+
+            // 2. 남은 업무를 RR 방식을 사용하여 분배한다.
+            for(int r=0; r<remain; r++) {
+                distributionTasks[servers[server][r]]++;
+            }
+        }
+
+        // 업무 분배 확인 ✅
+//        for(int server=1; server<=serversNum; server++) {
+//            System.out.print(distributionTasks[server]+" ");
+//        }
+        return distributionTasks;
     }
 
-    // 노드로 들어오는 간선의 개수를 구한다.
+
+    // 1. 노드로 들어오는 간선의 수를 구한다.
+    int[] inEdge;
     private void calcInEdge() {
-        for(int node=1; node<=nodes; node++) {  // 각 노드의 연결을 확인한다
-            for(int[] otherNodes : servers[node]) { // 노드로 들어오는 간선의 개수를 세어준다.
-                for(int otherNode : otherNodes) {
-                    inEdges[otherNode]++;
-                }
+        inEdge = new int[serversNum+1];
+
+        for(int server=1; server <= serversNum; server++) { // 각 서버에 연결되어 있는 자식 노드를 조회한다.
+            for(int child : servers[server]) {
+                inEdge[child]++;
             }
         }
     }
 
-    List<Integer> sortedNodes;
-    // 위상 정렬을 수행한다.
-    // inEdge 사용 
-    private void topologySort() {
-        sortedNodes = new ArrayList<>();
-
-        // 위상 정렬을 위한 Stack
+    // 2. inEdge 를 바탕으로 위상정렬을 수행한다.
+    private int[] sortByInEdge() {
         Stack<Integer> st = new Stack<>();
 
-        // 각 노드를 순회하며, 들어오는 간선의 개수가 0인 노드가 우선순위를 갖는다.
-        for(int node=1; node<=nodes; node++) {
-            if(inEdges[node] == 0) {
-                st.push(node);
+        for(int server=1; server<=serversNum; server++) {   // 모든 서버를 조회하며, inEdge 가 0 인 요소를 찾는다.
+            // 들어오는 간선의 개수가 0인 것이 우선순위를 갖는다.
+            if(inEdge[server] == 0) {
+                st.push(server);
             }
         }
 
+        int idx = 0;
+        int[] sortedServer = new int[serversNum];   // 정렬된 서버를 저장하는 배열
+        // 우선순위가 높은 것부터 처리한다.
         while(!st.isEmpty()) {
-            // 현재 노드를 가져온다.
-            int nowNode = st.pop();
-            // 정렬 리스트에 추가한다.
-            sortedNodes.add(nowNode);
+            int nowServer = st.pop();
+            // 값이 0인 서버를 우선적으로 배치한다. -> 루트 노드이다.
+            sortedServer[idx++] = nowServer;
 
-            // 현재 노드와 연결된 노드들의 inEdge 수를 줄여준다.
-            for(int[] chlidNodes : servers[nowNode]) {
-                for(int childNode : chlidNodes) {
-                    inEdges[childNode]--;
+            for(int child : servers[nowServer]) {   // 현재 서버와 연결된 자식 서버의 inEdge 수를 1 줄여준다
+                inEdge[child]--;
 
-                    // 만약 자식노드에 들어오는 간선이 없다면 Stack 에 넣어준다.
-                    if(inEdges[childNode] == 0) {
-                        st.push(childNode);
-                    }
+                if(inEdge[child] == 0) {    // 들어오는 간선의 개수가 0이 된다면 Stack 에 삽입한다.
+                    st.push(child);
                 }
             }
         }
+
+        return sortedServer;
     }
 
-
-    private long[] calcTraffic() {
-    	long[] traffic = new long[nodes+1];	// 각 서버 별 할당되는 업무량을 기록 
-    	traffic[1] = tasks;	// 루트 노드 (1) 에 모든 업무 할당  
-    	for(int server : sortedNodes) {
-    		long task = traffic[server];
-//    		// 현재 노드와 연결 (나가는 )노드가 없다면 
-    		if(servers[server].isEmpty()) continue;
-    		
-    		long div = (long) task/servers[server].get(0).length;
-    		long remain = (long)task%servers[server].get(0).length;
-    		
-    		// 각 자식 노드들에게 나누어 떨어지는 업무의 수
-    		for(int child : servers[server].get(0)) {
-    			traffic[child] += div;
-    		}
-    		
-    		// 남아있는 업무의 수를 RR 방식을 사용하여 자식 노드에게 전달
-    		for(int r=0; r<remain; r++) {
-    			traffic[servers[server].get(0)[r]]++;
-    		}
-    	}
-    	
-    	
-    	for(long l : traffic) {
-    		System.out.print(l+" ");
-    	}
-    	return traffic;
-    }
 }
 
 /*
