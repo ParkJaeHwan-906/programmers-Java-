@@ -63,12 +63,12 @@ public class no_6277 {
             return;
         }
 
-        // 모든 색상을 탐색한 경우
-        if(colorIdx == colorNums+1) {
-            // 최소값을 갱신한다.
-            minArea = Math.min(minArea, (maxX-minX) * (maxY-minY));
-            return;
-        }
+//        // 모든 색상을 탐색한 경우
+//        if(colorIdx == colorNums+1) {
+//            // 최소값을 갱신한다.
+//            minArea = Math.min(minArea, (maxX-minX) * (maxY-minY));
+//            return;
+//        }
 
         // 더 탐색할 색상이 남아있다면
         for(int[] point : colorDots[colorIdx]) {
@@ -76,6 +76,12 @@ public class no_6277 {
             int nMaxY = Math.max(maxY, point[1]);
             int nMinX = Math.min(minX, point[0]);
             int nMinY = Math.min(minY, point[1]);
+
+            // 현재 면적이 최소 면적보다 작으면 종료
+            // 더 이상 탐색할 가치가 없다
+            if(minArea <= (nMaxX-nMinX) * (nMaxY-nMinY)) {
+                continue;
+            }
 
             // 다음 탐색을 진행한다.
             findMinArea(colorIdx+1, nMaxX, nMaxY, nMinX, nMinY);
