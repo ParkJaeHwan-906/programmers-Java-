@@ -41,7 +41,7 @@ public class PMMERS_17680_캐시_박재환 {
 
                     cache.offer(city);
 
-                    progressTime +=
+                    progressTime += 5;
                 }
             }
             return progressTime;
