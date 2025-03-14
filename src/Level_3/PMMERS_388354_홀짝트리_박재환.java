@@ -78,7 +78,8 @@ public class PMMERS_388354_홀짝트리_박재환 {
             // 역홀짝 혹은 홀짝 트리가 될 수 있는 경우
             if (evenOdd == 1) {
                 normalTree++;
-            } else if (reverseEvenOdd == 1) {
+            }
+            if (reverseEvenOdd == 1) {
                 reverseTree++;
             }
         }
