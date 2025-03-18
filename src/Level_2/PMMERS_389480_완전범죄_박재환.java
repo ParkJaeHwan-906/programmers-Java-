@@ -4,9 +4,10 @@ import java.util.*;
 
 public class PMMERS_389480_완전범죄_박재환 {
     public static void main(String[] args) {
-        int[][] info = {{1, 2}, {2, 3},{2, 1}};
-        int n = 4;
-        int m = 4;
+//        int[][] info = {{1, 2}, {2, 3},{2, 1}};
+        int[][] info = {{3,3}, {3, 3}};
+        int n = 6;
+        int m = 1;
 
         System.out.println(new PMMERS_389480_완전범죄_박재환().solution(info,n,m));
     }
@@ -30,10 +31,20 @@ public class PMMERS_389480_완전범죄_박재환 {
         }
         dp[0][0] = 0;   // 아무것도 훔치지 않은 상태
 
-        for(int item=1; item<info.length; item++) {
+        /*
+            [i][j]
+            i : 훔친 물건의 개수
+            j : b의 흔적 -> 값 : 이때 a 의 흔적
+         */
+        for(int item=1; item<=info.length; item++) {
             int a = info[item-1][0];    // a 가 훔침
             int b = info[item-1][1];    // b 가 훔침
 
+            /*
+                a 가 물건을 훔치는 경우, b 의 흔적은 증가하지 않고, a의 흔적 ([i][j] 의 값 ) 에 a 를 더한다.
+
+                b 가 물건을 훔치는 경우 i-1 개의 물건을 훔칠때 a 의 최소값을 그대로 가져온다.
+             */
             for(int j=0; j<m; j++) {
                 // A 가 훔친다.
                 dp[item][j] = Math.min(dp[item][j], dp[item-1][j]+a);
@@ -45,16 +56,13 @@ public class PMMERS_389480_완전범죄_박재환 {
             }
         }
 
-        for(int[] add : dp) {
-            System.out.println(Arrays.toString(add));
-        }
         // 최소 흔적 찾기
         minValue = INF;
         for(int j=0; j<m; j++) {
             minValue = Math.min(minValue, dp[info.length][j]);
         }
 
-        return minValue == INF ? -1 : minValue;
+        return minValue >= n ? -1 : minValue;
     }
 
     /*
