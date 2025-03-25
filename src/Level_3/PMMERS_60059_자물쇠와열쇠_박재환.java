@@ -16,7 +16,7 @@ public class PMMERS_60059_자물쇠와열쇠_박재환 {
         { 1, 0, 1 }
     };
 
-    System.out.println(new PMMERS_60059_자물쇠와열쇠().solution(key, lock));
+    System.out.println(new PMMERS_60059_자물쇠와열쇠_박재환().solution(key, lock));
   }
 
   int lockSize, keySize;
