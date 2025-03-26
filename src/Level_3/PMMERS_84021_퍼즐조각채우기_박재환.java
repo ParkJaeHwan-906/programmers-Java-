@@ -5,23 +5,95 @@ import java.util.*;
 public class PMMERS_84021_퍼즐조각채우기_박재환 {
 
     public static void main(String[] args) {
-        int[][] game_board = {
-                {1,1,0,0,1,0},
-                {0,0,1,0,1,0},
-                {0,1,1,0,0,1},
-                {1,1,0,1,1,1},
-                {1,0,0,0,1,0},
-                {0,1,1,1,0,0}};
+//        int[][] game_board = {
+//                {1,1,0,0,1,0},
+//                {0,0,1,0,1,0},
+//                {0,1,1,0,0,1},
+//                {1,1,0,1,1,1},
+//                {1,0,0,0,1,0},
+//                {0,1,1,1,0,0}};
+//
+//        int[][] table = {
+//                {1,0,0,1,1,0},
+//                {1,0,1,0,1,0},
+//                {0,1,1,0,1,1},
+//                {0,0,1,0,0,0},
+//                {1,1,0,1,1,0},
+//                {0,1,0,0,0,0}
+//        };
 
-        int[][] table = {
-                {1,0,0,1,1,0},
-                {1,0,1,0,1,0},
-                {0,1,1,0,1,1},
-                {0,0,1,0,0,0},
-                {1,1,0,1,1,0},
-                {0,1,0,0,0,0}
+//        int[][] game_board = {
+//                {1, 1, 1, 0},
+//                {1, 0, 0, 0},
+//                {1, 0, 1, 1},
+//                {1, 1, 1, 1}
+//        };
+//
+//        int[][] table = {
+//                {0, 0, 0, 1},
+//                {1, 1, 1, 0},
+//                {0, 0, 0, 0},
+//                {0, 0, 0, 0}
+//        };
+
+//        int[][] game_board = {
+//                {1, 1, 1, 1},
+//                {1, 0, 0, 1},
+//                {1, 0, 1, 1},
+//                {1, 1, 1, 1}
+//        };
+//
+//        int[][] table = {
+//                {0, 0, 0, 0},
+//                {0, 1, 0, 0},
+//                {1, 1, 0, 0},
+//                {0, 0, 0, 0}
+//        };
+
+//        int[][] game_board = {
+//                {0, 0, 0, 0, 0},
+//                {0, 0, 0, 0, 0},
+//                {0, 0, 0, 0, 0},
+//                {0, 0, 0, 0, 0},
+//                {0, 0, 0, 0, 0}
+//        };
+//
+//        int[][] table = {
+//                {1, 1, 1, 1, 0},
+//                {1, 0, 0, 1, 0},
+//                {1, 1, 1, 0, 0},
+//                {0, 0, 0, 0, 1},
+//                {0, 0, 0, 0, 0}
+//        };
+        int[][] game_board = {
+                {0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0},
+                {1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0},
+                {0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 0},
+                {1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 0, 1},
+                {0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0},
+                {0, 0, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1},
+                {0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0},
+                {0, 0, 1, 0, 1, 0, 0, 1, 1, 1, 0, 0},
+                {1, 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0},
+                {0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0},
+                {0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 1},
+                {0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0}
         };
 
+        int[][] table = {
+                {1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1},
+                {1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1},
+                {1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 1, 0},
+                {0, 0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0},
+                {1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0},
+                {1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0},
+                {1, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1},
+                {1, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1},
+                {0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 1},
+                {1, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1},
+                {1, 1, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1},
+                {1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1}
+        };
         System.out.println(new PMMERS_84021_퍼즐조각채우기_박재환().solution(game_board,table));
     }
 
@@ -58,16 +130,77 @@ public class PMMERS_84021_퍼즐조각채우기_박재환 {
 //        	}
 //        	System.out.println();
 //        }
+//
+//        System.out.println("비트 변환");
 
-        return 0;
+        // 각 도형을 비트로 변환하여 저장
+        List<String>[] gameBoardBlocksBit = new ArrayList[gameBoardBlocks.size()];
+        for(int idx=0; idx<gameBoardBlocks.size(); idx++) {
+            gameBoardBlocksBit[idx] = new ArrayList<>();
+        }
+
+        List<String>[] tableBlocksBit = new ArrayList[tableBlocks.size()];
+        for(int idx=0; idx<tableBlocks.size(); idx++) {
+            tableBlocksBit[idx] = new ArrayList<>();
+        }
+
+        makeBit(gameBoardBlocks, gameBoardBlocksBit, false);
+        makeBit(tableBlocks, tableBlocksBit, true);
+
+        System.out.println("보드 ( 회전 X )");
+        for(int idx=0; idx<gameBoardBlocksBit.length; idx++) {
+            for(String s : gameBoardBlocksBit[idx]) {
+                System.out.println(s);
+            }
+            System.out.println();
+        }
+
+        System.out.println("테이블 ( 회전 O )");
+        for(int idx=0; idx<tableBlocksBit.length; idx++) {
+            for(String s : tableBlocksBit[idx]) {
+                System.out.println(s);
+            }
+            System.out.println();
+        }
+
+        // 생성된 비트 조합으로 일치하는지 확인
+        boolean[] gameBoardUsed = new boolean[gameBoardBlocks.size()];
+        boolean[] tableUsed = new boolean[tableBlocks.size()];
+
+        int totalCnt=0;
+        for(int tableIdx=0; tableIdx<tableUsed.length; tableIdx++) {
+            for(String tableBit : tableBlocksBit[tableIdx]) {
+                // 해당 블록을 사용했다면
+                if(tableUsed[tableIdx]) break;
+                for(int gameBoardIdx=0; gameBoardIdx<gameBoardUsed.length; gameBoardIdx++) {
+                    if(gameBoardUsed[gameBoardIdx]) continue;
+
+                    if(gameBoardBlocksBit[gameBoardIdx].get(0).equals(tableBit)) {
+                        // 일치한다면
+                        gameBoardUsed[gameBoardIdx] = true;
+                        tableUsed[tableIdx] = true;
+
+                        // 채워진 칸의 개수를 구한다.
+                        for(char c : tableBit.toCharArray()) {
+                            if(c=='1') totalCnt++;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+
+        return totalCnt;
     }
 
     /*
      * 도형을 비트로 만든다. ( = 문자열 )
      * rotate 값이 true 일 경우 90 도씩 총 3번 즉 4개의 케이스를 만들어 저장한다. 
      */
-    static void makeBit(List<boolean[][]> blocks, boolean rotate) {
-    	for(boolean[][] block : blocks) {
+    static void makeBit(List<boolean[][]> blocks, List<String>[] blockBit, boolean rotate) {
+        // game_board, table 공통
+    	for(int idx=0; idx<blocks.size(); idx++) {
+            boolean[][] block = blocks.get(idx);
     		StringBuilder sb = new StringBuilder();
     		// 정방향일 때, 저장 
     		// 좌 -> 우 
@@ -76,7 +209,61 @@ public class PMMERS_84021_퍼즐조각채우기_박재환 {
     				sb.append(b?1:0);
     			}
     		}
+            // 탐색 가짓수 줄이기
+            if(blockBit[idx].contains(sb.toString())) continue;
+
+            blockBit[idx].add(sb.toString());
     	}
+
+        if(!rotate) return;
+
+        // rotate 가 참일때, 즉 table 블록들만
+
+        // 각 90 도로 회전 시킨 비트 형태를 기록한다.
+        for(int idx=0; idx<blocks.size(); idx++) {
+            boolean[][] block = blocks.get(idx);
+            StringBuilder sb = new StringBuilder();
+            // 좌 -> 우, 위 방향으로
+            for(int y=0; y<block[0].length; y++) {
+                for(int x=block.length-1; x>-1; x--) {
+                    sb.append(block[x][y]?1:0);
+                }
+            }
+            // 탐색 가짓수 줄이기
+            if(blockBit[idx].contains(sb.toString())) continue;
+
+            blockBit[idx].add(sb.toString());
+        }
+
+        for(int idx=0; idx<blocks.size(); idx++) {
+            boolean[][] block = blocks.get(idx);
+            StringBuilder sb = new StringBuilder();
+            // 우 -> 좌, 아래서 위
+            for(int x=block.length-1; x>-1; x--) {
+                for(int y=block[0].length-1; y>-1; y--) {
+                    sb.append(block[x][y]?1:0);
+                }
+            }
+            // 탐색 가짓수 줄이기
+            if(blockBit[idx].contains(sb.toString())) continue;
+
+            blockBit[idx].add(sb.toString());
+        }
+
+        for(int idx=0; idx<blocks.size(); idx++) {
+            boolean[][] block = blocks.get(idx);
+            StringBuilder sb = new StringBuilder();
+            // 상 하, 오른쪽에서 왼쪽
+            for(int y=block[0].length-1; y>-1; y--) {
+                for(int x=0; x<block.length; x++) {
+                    sb.append(block[x][y]?1:0);
+                }
+            }
+            // 탐색 가짓수 줄이기
+            if(blockBit[idx].contains(sb.toString())) continue;
+
+            blockBit[idx].add(sb.toString());
+        }
     }
 
 
@@ -99,11 +286,14 @@ public class PMMERS_84021_퍼즐조각채우기_박재환 {
                 q.offer(new int[] {x,y});
                 checked[x][y] = true;
 
+                Queue<int[]> spaceLoc = new LinkedList<>();
                 // 인접 영역을 모두 탐색한다.
                 while(!q.isEmpty()) {
                     int[] curPoints = q.poll();
                     int curX = curPoints[0];
                     int curY = curPoints[1];
+
+                    spaceLoc.offer(curPoints);
 
                     for(int dir=0; dir<4; dir++){
                         int nx = curX + dx[dir];
@@ -124,7 +314,6 @@ public class PMMERS_84021_퍼즐조각채우기_박재환 {
                         minY = Math.min(minY, ny);
                         maxY = Math.max(maxY, ny);
                     }
-
                 }
 
                 int diffX = Math.abs(maxX-minX);
@@ -132,12 +321,20 @@ public class PMMERS_84021_퍼즐조각채우기_박재환 {
                 // 영역의 크기만큼 도형을 저장
                 boolean[][] block = new boolean[diffX+1][diffY+1];
 
-                for(int x1=minX; x1<=maxX; x1++) {
-                    for(int y1=minY; y1<=maxY; y1++) {
-                    	if(arr[x1][y1] == targetSpace) {
-                    		block[x1-minX][y1-minY] = true;
-                    	}
-                    }
+//                for(int x1=minX; x1<=maxX; x1++) {
+//                    for(int y1=minY; y1<=maxY; y1++) {
+//                    	if(arr[x1][y1] == targetSpace) {
+//                    		block[x1-minX][y1-minY] = true;
+//                    	}
+//                    }
+//                }
+
+                while(!spaceLoc.isEmpty()) {
+                    int[] curPoints = spaceLoc.poll();
+                    int curX = curPoints[0];
+                    int curY = curPoints[1];
+
+                    block[curX-minX][curY-minY] = true;
                 }
 
                 blockList.add(block);
