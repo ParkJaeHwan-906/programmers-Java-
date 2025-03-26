@@ -28,8 +28,8 @@ public class PMMERS_84021_퍼즐조각채우기_박재환 {
     int[] dx = {0,1,0,-1};
     int[] dy = {1,0,-1,0};
     // 블록들을 저장할 배열
-    List<int[][]> tableBlocks;
-    List<int[][]> gameBoardBlocks;
+    List<boolean[][]> tableBlocks;
+    List<boolean[][]> gameBoardBlocks;
     public int solution(int[][] game_board, int[][] table) {
         tableBlocks = new ArrayList<>();
         gameBoardBlocks = new ArrayList<>();
@@ -38,20 +38,25 @@ public class PMMERS_84021_퍼즐조각채우기_박재환 {
         findBlock(game_board,gameBoardBlocks,0);
 
         System.out.println("보드");
-        for(int[][] arr : gameBoardBlocks) {
-            for(int[] arr1 : arr) {
-                System.out.println(Arrays.toString(arr1));
-            }
-            System.out.println();
+        for(boolean[][] arr : gameBoardBlocks) {
+        	for(boolean[] arr2 : arr) {
+        		for(boolean b : arr2) {
+        			System.out.print(b ? 1:0);
+        		}
+        		System.out.println();
+        	}
+        	System.out.println();
         }
-        System.out.println();
 
         System.out.println("테이블");
-        for(int[][] arr : tableBlocks) {
-            for(int[] arr1 : arr) {
-                System.out.println(Arrays.toString(arr1));
-            }
-            System.out.println();
+        for(boolean[][] arr : tableBlocks) {
+        	for(boolean[] arr2 : arr) {
+        		for(boolean b : arr2) {
+        			System.out.print(b ? 1:0);
+        		}
+        		System.out.println();
+        	}
+        	System.out.println();
         }
 
         return 0;
@@ -59,7 +64,7 @@ public class PMMERS_84021_퍼즐조각채우기_박재환 {
 
 
 
-    void findBlock(int[][] arr, List<int[][]> blockList, int targetSpace) {
+    void findBlock(int[][] arr, List<boolean[][]> blockList, int targetSpace) {
         boolean[][] checked = new boolean[arr.length][arr.length];
 
         for(int x=0; x<arr.length; x++) {
@@ -108,13 +113,14 @@ public class PMMERS_84021_퍼즐조각채우기_박재환 {
 
                 int diffX = Math.abs(maxX-minX);
                 int diffY = Math.abs(maxY-minY);
-                int blockSize = Math.max(diffX, diffY)+1;
                 // 영역의 크기만큼 도형을 저장
-                int[][] block = new int[blockSize][blockSize];
+                boolean[][] block = new boolean[diffX+1][diffY+1];
 
                 for(int x1=minX; x1<=maxX; x1++) {
                     for(int y1=minY; y1<=maxY; y1++) {
-                        block[x1-minX][y1-minY] = arr[x1][y1];
+                    	if(arr[x1][y1] == targetSpace) {
+                    		block[x1-minX][y1-minY] = true;
+                    	}
                     }
                 }
 
