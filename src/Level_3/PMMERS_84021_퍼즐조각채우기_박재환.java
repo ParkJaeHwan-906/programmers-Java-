@@ -36,19 +36,19 @@ public class PMMERS_84021_퍼즐조각채우기_박재환 {
 //                {0, 0, 0, 0}
 //        };
 
-//        int[][] game_board = {
-//                {1, 1, 1, 1},
-//                {1, 0, 0, 1},
-//                {1, 0, 1, 1},
-//                {1, 1, 1, 1}
-//        };
-//
-//        int[][] table = {
-//                {0, 0, 0, 0},
-//                {0, 1, 0, 0},
-//                {1, 1, 0, 0},
-//                {0, 0, 0, 0}
-//        };
+        int[][] game_board = {
+                {1, 1, 1, 1},
+                {1, 0, 0, 1},
+                {1, 0, 1, 1},
+                {1, 1, 1, 1}
+        };
+
+        int[][] table = {
+                {0, 0, 0, 0},
+                {0, 1, 0, 0},
+                {1, 1, 0, 0},
+                {0, 0, 0, 0}
+        };
 
 //        int[][] game_board = {
 //                {0, 0, 0, 0, 0},
@@ -65,35 +65,35 @@ public class PMMERS_84021_퍼즐조각채우기_박재환 {
 //                {0, 0, 0, 0, 1},
 //                {0, 0, 0, 0, 0}
 //        };
-        int[][] game_board = {
-                {0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0},
-                {1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0},
-                {0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 0},
-                {1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 0, 1},
-                {0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0},
-                {0, 0, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1},
-                {0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0},
-                {0, 0, 1, 0, 1, 0, 0, 1, 1, 1, 0, 0},
-                {1, 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0},
-                {0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0},
-                {0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 1},
-                {0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0}
-        };
-
-        int[][] table = {
-                {1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1},
-                {1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1},
-                {1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 1, 0},
-                {0, 0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0},
-                {1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0},
-                {1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0},
-                {1, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1},
-                {1, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1},
-                {0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 1},
-                {1, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1},
-                {1, 1, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1},
-                {1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1}
-        };
+//        int[][] game_board = {
+//                {0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0},
+//                {1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0},
+//                {0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 0},
+//                {1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 0, 1},
+//                {0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0},
+//                {0, 0, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1},
+//                {0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0},
+//                {0, 0, 1, 0, 1, 0, 0, 1, 1, 1, 0, 0},
+//                {1, 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0},
+//                {0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0},
+//                {0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 1},
+//                {0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0}
+//        };
+//
+//        int[][] table = {
+//                {1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1},
+//                {1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1},
+//                {1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 1, 0},
+//                {0, 0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0},
+//                {1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0},
+//                {1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0},
+//                {1, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1},
+//                {1, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1},
+//                {0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 1},
+//                {1, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1},
+//                {1, 1, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1},
+//                {1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1}
+//        };
         System.out.println(new PMMERS_84021_퍼즐조각채우기_박재환().solution(game_board,table));
     }
 
@@ -147,21 +147,21 @@ public class PMMERS_84021_퍼즐조각채우기_박재환 {
         makeBit(gameBoardBlocks, gameBoardBlocksBit, false);
         makeBit(tableBlocks, tableBlocksBit, true);
 
-        System.out.println("보드 ( 회전 X )");
-        for(int idx=0; idx<gameBoardBlocksBit.length; idx++) {
-            for(String s : gameBoardBlocksBit[idx]) {
-                System.out.println(s);
-            }
-            System.out.println();
-        }
-
-        System.out.println("테이블 ( 회전 O )");
-        for(int idx=0; idx<tableBlocksBit.length; idx++) {
-            for(String s : tableBlocksBit[idx]) {
-                System.out.println(s);
-            }
-            System.out.println();
-        }
+//        System.out.println("보드 ( 회전 X )");
+//        for(int idx=0; idx<gameBoardBlocksBit.length; idx++) {
+//            for(String s : gameBoardBlocksBit[idx]) {
+//                System.out.println(s);
+//            }
+//            System.out.println();
+//        }
+//
+//        System.out.println("테이블 ( 회전 O )");
+//        for(int idx=0; idx<tableBlocksBit.length; idx++) {
+//            for(String s : tableBlocksBit[idx]) {
+//                System.out.println(s);
+//            }
+//            System.out.println();
+//        }
 
         // 생성된 비트 조합으로 일치하는지 확인
         boolean[] gameBoardUsed = new boolean[gameBoardBlocks.size()];
@@ -208,6 +208,7 @@ public class PMMERS_84021_퍼즐조각채우기_박재환 {
     			for(boolean b : arr) {
     				sb.append(b?1:0);
     			}
+    			sb.append(',');
     		}
             // 탐색 가짓수 줄이기
             if(blockBit[idx].contains(sb.toString())) continue;
@@ -228,6 +229,7 @@ public class PMMERS_84021_퍼즐조각채우기_박재환 {
                 for(int x=block.length-1; x>-1; x--) {
                     sb.append(block[x][y]?1:0);
                 }
+                sb.append(',');
             }
             // 탐색 가짓수 줄이기
             if(blockBit[idx].contains(sb.toString())) continue;
@@ -243,6 +245,7 @@ public class PMMERS_84021_퍼즐조각채우기_박재환 {
                 for(int y=block[0].length-1; y>-1; y--) {
                     sb.append(block[x][y]?1:0);
                 }
+                sb.append(',');
             }
             // 탐색 가짓수 줄이기
             if(blockBit[idx].contains(sb.toString())) continue;
@@ -258,6 +261,7 @@ public class PMMERS_84021_퍼즐조각채우기_박재환 {
                 for(int x=0; x<block.length; x++) {
                     sb.append(block[x][y]?1:0);
                 }
+                sb.append(',');
             }
             // 탐색 가짓수 줄이기
             if(blockBit[idx].contains(sb.toString())) continue;
