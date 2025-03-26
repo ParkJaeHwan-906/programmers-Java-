@@ -37,31 +37,47 @@ public class PMMERS_84021_퍼즐조각채우기_박재환 {
         findBlock(table,tableBlocks,1);
         findBlock(game_board,gameBoardBlocks,0);
 
-        System.out.println("보드");
-        for(boolean[][] arr : gameBoardBlocks) {
-        	for(boolean[] arr2 : arr) {
-        		for(boolean b : arr2) {
-        			System.out.print(b ? 1:0);
-        		}
-        		System.out.println();
-        	}
-        	System.out.println();
-        }
-
-        System.out.println("테이블");
-        for(boolean[][] arr : tableBlocks) {
-        	for(boolean[] arr2 : arr) {
-        		for(boolean b : arr2) {
-        			System.out.print(b ? 1:0);
-        		}
-        		System.out.println();
-        	}
-        	System.out.println();
-        }
+//        System.out.println("보드");
+//        for(boolean[][] arr : gameBoardBlocks) {
+//        	for(boolean[] arr2 : arr) {
+//        		for(boolean b : arr2) {
+//        			System.out.print(b ? 1:0);
+//        		}
+//        		System.out.println();
+//        	}
+//        	System.out.println();
+//        }
+//
+//        System.out.println("테이블");
+//        for(boolean[][] arr : tableBlocks) {
+//        	for(boolean[] arr2 : arr) {
+//        		for(boolean b : arr2) {
+//        			System.out.print(b ? 1:0);
+//        		}
+//        		System.out.println();
+//        	}
+//        	System.out.println();
+//        }
 
         return 0;
     }
 
+    /*
+     * 도형을 비트로 만든다. ( = 문자열 )
+     * rotate 값이 true 일 경우 90 도씩 총 3번 즉 4개의 케이스를 만들어 저장한다. 
+     */
+    static void makeBit(List<boolean[][]> blocks, boolean rotate) {
+    	for(boolean[][] block : blocks) {
+    		StringBuilder sb = new StringBuilder();
+    		// 정방향일 때, 저장 
+    		// 좌 -> 우 
+    		for(boolean[] arr : block) {
+    			for(boolean b : arr) {
+    				sb.append(b?1:0);
+    			}
+    		}
+    	}
+    }
 
 
     void findBlock(int[][] arr, List<boolean[][]> blockList, int targetSpace) {
