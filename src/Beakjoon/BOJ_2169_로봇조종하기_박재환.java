@@ -1,4 +1,4 @@
-package Baejkoon;
+package Beakjoon;
 
 import java.util.*;
 import java.io.*;
