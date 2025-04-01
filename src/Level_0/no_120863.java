@@ -12,7 +12,7 @@ public class no_120863 {
             if(str.indexOf("x") >= 0){
                 // x
                 str = str.replace("x","");
-                if(str.isBlank()) x++;
+                if(str.isEmpty()) x++;
                 else x += Integer.parseInt(str);
             }else{
                 num += Integer.parseInt(str);
