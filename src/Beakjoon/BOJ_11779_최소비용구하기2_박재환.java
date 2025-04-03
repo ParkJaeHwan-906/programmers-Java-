@@ -116,7 +116,8 @@ public class BOJ_11779_최소비용구하기2_박재환 {
 				int connCost = conn[1];
 				
 				// 나아가려는 경로의 가중치가 기존 가중치보다 크다면 패스
-				if(dist[connNode].minCost < curNode.minCost + connCost) continue;
+				// 여기 왜 = 쓰면 통과고, 안쓰면 메모리초과?
+				if(dist[connNode].minCost <= curNode.minCost + connCost) continue;
 				
 				// 작다면 
 				dist[connNode].minCost = curNode.minCost + connCost;
