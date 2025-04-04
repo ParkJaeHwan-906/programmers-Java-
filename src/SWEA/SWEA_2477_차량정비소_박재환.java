@@ -24,26 +24,28 @@ public class SWEA_2477_차량정비소_박재환 {
 	/*
 	 * 고객 관리를 위한 클래스 
 	 */
-	static class Customer implements Comparable<Customer> {
+	static class Customer  {
 		int no;		// 고객 번호
-		int inTime;	// 처리 시간 
-		int csNo;	// 접수 창구 
-		int msNo;	// 정비 창구 
-		
+		int inTime;	// 처리 시간 or 도착 시간
+		int csNo;	// 접수 창구
+		int msNo;	// 정비 창구
+
+		int csEndTime; // 접수 창구 종료 시간 (정비 창구 삽입 시 정렬)
+
 		public Customer (int no, int inTime) {
 			this.no = no;
 			this.inTime = inTime;
-			// 초기 대기중인 상태, 창구 배정 X 
 			this.csNo = -1;
 			this.msNo = -1;
+			this.csEndTime = -1;
 		}
 		
-		void printInfo() {
-			System.out.println("고객 번호 : " + no);
-			System.out.println("시간  : "+ inTime);
-			System.out.println("접수 창구 : " + csNo);
-			System.out.println("정비 창구 : " +  msNo);
-		}
+//		void printInfo() {
+//			System.out.println("고객 번호 : " + no);
+//			System.out.println("시간  : "+ inTime);
+//			System.out.println("접수 창구 : " + csNo);
+//			System.out.println("정비 창구 : " +  msNo);
+//		}
 		
 		// 정렬
 		/*
@@ -55,25 +57,7 @@ public class SWEA_2477_차량정비소_박재환 {
 		 * 1. 먼저 기다리는 고객이 우선 
 		 * 2. 동시에 들어왔을 때는, 접수 창구 번호가 작은 고객 우선
 		 * 3. 빈 창구가 여러 곳, 정비 창구 번호가 작은 곳으로
-		 */ 
-		@Override
-		public int compareTo(Customer o) {
-			// 고객의 진입 시간이 같은 경우 
-			if(this.inTime == o.inTime) {
-				// 1. 접수 창구 
-				// 고객의 번호가 낮은 순으로 
-				if(this.csNo == -1 && o.csNo == -1) return this.no - o.no;
-				
-				// 접수 창구를 지나침 
-				
-				// 2. 정비 창구 
-				// 접수 창구 번호가 작은 고객 우선으로 
-				return this.csNo - o.csNo;
-			}
-			
-			
-			return this.inTime - o.inTime;
-		}
+		 */
 	}
 	
 	static StringTokenizer st;
@@ -105,7 +89,11 @@ public class SWEA_2477_차량정비소_박재환 {
 			ms[idx] = Integer.parseInt(st.nextToken());
 		}
 		
-		customers = new PriorityQueue<>();
+		customers = new PriorityQueue<>((c1, c2) -> {
+			if(c1.inTime == c2.inTime) return c1.no - c2.no;
+
+			return c1.inTime - c2.inTime;
+		});
 		st = new StringTokenizer(br.readLine().trim());
 		for(int no=1; no<customerCnt+1; no++) {
 			int inTime = Integer.parseInt(st.nextToken());
@@ -127,7 +115,13 @@ public class SWEA_2477_차량정비소_박재환 {
 	static Queue<Customer> doneQueue;	// 작업을 모두 마친 고객을 저장 
 	static void findCustomers() {
 		doneQueue = new LinkedList<>();
-		waitPq = new PriorityQueue<>();		// 접수 -> 정비 의 중간 대기 공간 
+		waitPq = new PriorityQueue<>((c1, c2) -> {	// 접수 창구 끝낸 순 비교 + 고객 번호 비교
+			if (c1.csEndTime == c2.csEndTime) return c1.csNo - c2.csNo;
+
+			return c1.csEndTime - c2.csEndTime;
+		});		// 접수 -> 정비 의 중간 대기 공간
+
+
 		// 접수 창구와 정비 창구를 구현한다.
 		// 진입 시간을 우선으로
 		// 같다면 각 창구의 우선 순위를 적용 
@@ -146,40 +140,7 @@ public class SWEA_2477_차량정비소_박재환 {
 		//---------------------------------------------------
 		
 		while(doneQueue.size() < customerCnt) {	// 모든 고객의 작업이 끝나는 경우  
-			System.out.println("현재 시간 : " + curTime);
-			// TEST
-			System.out.println("초기 대기 고객 ");
-			for(Customer c : customers) {
-				c.printInfo();
-				System.out.println();
-			}
-			
-			System.out.println("현재 접수 창구");
-			for(int i=0; i<csCnt; i++) {
-				for(Customer c : csPq[i]) {
-					c.printInfo();
-					System.out.println();
-				}
-			}
-			System.out.println("중간 대기 고객");
-			for(Customer c : waitPq) {
-				c.printInfo();
-				System.out.println();
-			}
-			System.out.println("현재 정비 창구");
-			for(int i=0; i<msCnt; i++) {
-				for(Customer c : msPq[i]) {
-					c.printInfo();
-					System.out.println();
-				}
-			}
-			System.out.println("완료 고객");
-			for(Customer c : doneQueue) {
-				c.printInfo();
-				System.out.println();
-			}
-			System.out.println("------------------------------");
-			// 1. 정비 창구에서 끝낼 수 있는 인원이 있다면 끝낸다. 
+			// 1. 정비 창구에서 끝낼 수 있는 인원이 있다면 끝낸다.
 			finishMs(curTime);
 			// 2. 정비 창구로 갈 수 있는 인원이 있다면, 정비 창구로 보낸다. 
 			//	2-1. 접수 창구에서 작업이 끝나는 인원을 추가한다. 
@@ -188,9 +149,6 @@ public class SWEA_2477_차량정비소_박재환 {
 			moveMs(curTime);
 			// 3. 접수 창구로 갈 수 있는 인원이 있다면, 접수 창구로 보낸다. 
 			moveCs(curTime);
-			
-			// 대기중인 고객 시간 증가
-			waitQueueUpdate(curTime);
 			
 			// 현재 시간에 할 수 있는 작업 완료
 			curTime++;
@@ -214,6 +172,7 @@ public class SWEA_2477_차량정비소_박재환 {
 	    for (int no = 0; no < csCnt; no++) {
 	        if (!csPq[no].isEmpty() && csPq[no].peek().inTime == curTime) {
 	            Customer customer = csPq[no].poll();
+				customer.csEndTime = curTime;	// 종료 시간 갱신
 	            waitPq.add(customer); // 접수 창구에서 작업을 마친 후 대기 큐로 이동
 	        }
 	    }
@@ -250,29 +209,6 @@ public class SWEA_2477_차량정비소_박재환 {
 	            customer.inTime = curTime+cs[no]; // 접수 창구 처리 시간 추가
 	            csPq[no].offer(customer);
 	        }
-	    }
-	}
-
-	// 대기 중인 고객들의 시간을 업데이트하는 로직
-	static void waitQueueUpdate(int curTime) {
-	    // 대기 중인 고객들의 시간을 증가시킴
-	    int customerQSize = customers.size();
-	    while (customerQSize-- > 0) {
-	        Customer customer = customers.poll();
-	        /*
-	         * 아직 접수 창구에 가지 못한 인원들은
-	         * 도착하지 않았을 가능성도 있기에, 현 시간보다 작거나 같은 경우만 증가시킴 
-	         */
-	        if (customer.inTime <= curTime) customer.inTime++;
-	        customers.offer(customer);
-	    }
-
-	    // 중간 대기 큐에 있는 고객들의 시간을 증가시킴, 모두 증가 
-	    int waitQSize = waitPq.size();
-	    while (waitQSize-- > 0) {
-	        Customer customer = waitPq.poll();
-	        customer.inTime++;
-	        waitPq.offer(customer);
 	    }
 	}
 
