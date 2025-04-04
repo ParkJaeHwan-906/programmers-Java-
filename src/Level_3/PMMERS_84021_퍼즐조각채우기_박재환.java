@@ -94,8 +94,7 @@ public class PMMERS_84021_퍼즐조각채우기_박재환 {
 //                {1, 1, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1},
 //                {1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1}
 //        };
-<<<<<<< Updated upstream
-=======
+
 //        int[][] game_board = {
 //                {1,0,0},
 //                {1,0,0},
@@ -119,7 +118,7 @@ public class PMMERS_84021_퍼즐조각채우기_박재환 {
                 {1,0,1},
                 {1,1,0}
         };
->>>>>>> Stashed changes
+
         System.out.println(new PMMERS_84021_퍼즐조각채우기_박재환().solution(game_board,table));
     }
 
