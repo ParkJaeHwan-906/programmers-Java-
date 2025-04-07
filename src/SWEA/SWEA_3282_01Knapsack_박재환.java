@@ -3,7 +3,7 @@ package SWEA;
 import java.util.*;
 import java.io.*;
 
-public class SWEA_3282_Knapsack_박재환 {
+public class SWEA_3282_01Knapsack_박재환 {
 	static BufferedReader br;
 	static StringBuilder sb;
 	public static void main(String[] args) throws IOException {
