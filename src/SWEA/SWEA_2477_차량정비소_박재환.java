@@ -146,43 +146,43 @@ public class SWEA_2477_차량정비소_박재환 {
 		//---------------------------------------------------
 		
 		while(doneQueue.size() < customerCnt) {	// 모든 고객의 작업이 끝나는 경우  
-			System.out.println("현재 시간 : " + curTime);
-			// TEST
-			System.out.println("초기 대기 고객 ");
-			for(Customer c : customers) {
-				c.printInfo();
-				System.out.println();
-			}
-			
-			System.out.println("현재 접수 창구");
-			for(int i=0; i<csCnt; i++) {
-				for(Customer c : csPq[i]) {
-					c.printInfo();
-					System.out.println();
-				}
-			}
-			System.out.println("중간 대기 고객");
-			for(Customer c : waitPq) {
-				c.printInfo();
-				System.out.println();
-			}
-			System.out.println("현재 정비 창구");
-			for(int i=0; i<msCnt; i++) {
-				for(Customer c : msPq[i]) {
-					c.printInfo();
-					System.out.println();
-				}
-			}
-			System.out.println("완료 고객");
-			for(Customer c : doneQueue) {
-				c.printInfo();
-				System.out.println();
-			}
-			System.out.println("------------------------------");
+//			System.out.println("현재 시간 : " + curTime);
+//			// TEST
+//			System.out.println("초기 대기 고객 ");
+//			for(Customer c : customers) {
+//				c.printInfo();
+//				System.out.println();
+//			}
+//			
+//			System.out.println("현재 접수 창구");
+//			for(int i=0; i<csCnt; i++) {
+//				for(Customer c : csPq[i]) {
+//					c.printInfo();
+//					System.out.println();
+//				}
+//			}
+//			System.out.println("중간 대기 고객");
+//			for(Customer c : waitPq) {
+//				c.printInfo();
+//				System.out.println();
+//			}
+//			System.out.println("현재 정비 창구");
+//			for(int i=0; i<msCnt; i++) {
+//				for(Customer c : msPq[i]) {
+//					c.printInfo();
+//					System.out.println();
+//				}
+//			}
+//			System.out.println("완료 고객");
+//			for(Customer c : doneQueue) {
+//				c.printInfo();
+//				System.out.println();
+//			}
+//			System.out.println("------------------------------");
 			// 1. 정비 창구에서 끝낼 수 있는 인원이 있다면 끝낸다. 
 			finishMs(curTime);
-			// 2. 정비 창구로 갈 수 있는 인원이 있다면, 정비 창구로 보낸다. 
-			//	2-1. 접수 창구에서 작업이 끝나는 인원을 추가한다. 
+//			// 2. 정비 창구로 갈 수 있는 인원이 있다면, 정비 창구로 보낸다. 
+//			//	2-1. 접수 창구에서 작업이 끝나는 인원을 추가한다. 
 			finishCs(curTime);
 			//	2-2. waitQ 에서 대기중인 인원을 정비 창구로 보낸다. 
 			moveMs(curTime);
@@ -191,7 +191,8 @@ public class SWEA_2477_차량정비소_박재환 {
 			
 			// 대기중인 고객 시간 증가
 			waitQueueUpdate(curTime);
-			
+
+
 			// 현재 시간에 할 수 있는 작업 완료
 			curTime++;
 			
