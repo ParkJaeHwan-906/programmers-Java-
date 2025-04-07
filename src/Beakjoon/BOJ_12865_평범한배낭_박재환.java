@@ -31,17 +31,20 @@ public class BOJ_12865_평범한배낭_박재환 {
 	
 	static void getMaxItems() {
 		int[] bag = new int[limitW+1];	// 각 배낭의 무게마다 넣을 수 있는 최대 가치 ( 1-base )
-		
-		
+
 		for(int[] item : items) {
 			int itemW = item[0];
 			int itemV = item[1];
-			
+			/*
+				💡 역순으로 도는 이유
+				이전 아이템까지 계산된 상태만을 이용하기 때문
+				-> 아이템을 딱 한 번만 사용한다.
+			 */
 			for(int b=limitW; b > itemW-1; b--) {
 				bag[b] = Math.max(bag[b], bag[b-itemW] + itemV);
 			}
 		}
-		
+
 		System.out.println(bag[limitW]);
 	}
 }
