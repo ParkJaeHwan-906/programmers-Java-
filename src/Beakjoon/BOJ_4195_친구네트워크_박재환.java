@@ -18,18 +18,22 @@ public class BOJ_4195_친구네트워크_박재환 {
 	}
 	
 	static StringTokenizer st;
-	static int relationCnt;		// 각 테스트에서의 관계의 수 
+	static int relationCnt;		// 각 테스트에서의 관계의 수
+	static Map<String, Integer> nameMap;	// 각 사람의 이름 -> 인덱스 저장 정보
+	static int idx;							// 사람의 이름과 매핑할 인덱스
 	static void init() throws IOException {
+		idx = 0;
+		nameMap = new HashMap<>();
 		relationCnt = Integer.parseInt(br.readLine().trim());
 		
 		make();
+
 		while(relationCnt-- > 0) {
 			st = new StringTokenizer(br.readLine().trim());
 			
 			int nameA = convertName(st.nextToken());
 			int nameB = convertName(st.nextToken());
-			
-			
+
 			findNetWorking(nameA, nameB);
 		}
 	}
@@ -45,12 +49,11 @@ public class BOJ_4195_친구네트워크_박재환 {
 	
 	static int[] parents;
 	static int[] sizes;
-	static final int MAX_SIZE = (int)'z'*20;
 	static void make() {
-		parents = new int[MAX_SIZE];
-		sizes = new int[MAX_SIZE];
+		parents = new int[relationCnt*2];
+		sizes = new int[relationCnt*2];
 		
-		for(int idx=0; idx<MAX_SIZE; idx++) {
+		for(int idx=0; idx<relationCnt*2; idx++) {
 			parents[idx] = idx;
 			sizes[idx] = 1;		// 자기 자신만 포함
 		}
@@ -78,15 +81,13 @@ public class BOJ_4195_친구네트워크_박재환 {
         }
 	}
 	
-	// 문자열 다루는것보다는 해싱(?)해서 숫자로 다루기?
+	// Map 에 저장하여 각 이름의 인덱스 관리하기
 	static int convertName(String name) {
-		int sum = 0;
-		
-		for(char c : name.toCharArray()) {
-			sum += c;
-		}
-		
-		return sum;
+		if(nameMap.containsKey(name)) return nameMap.get(name);
+
+		// 처음 들어오는 친구이름이라면, idx 값 증가
+		nameMap.put(name, idx);
+		return idx++;
 	}
 }
 
