@@ -1,0 +1,89 @@
+package Beakjoon;
+
+import java.util.*;
+import java.io.*;
+
+public class BOJ_1949_우수마을_박재환 {
+	static BufferedReader br;
+	public static void main(String[] args) throws IOException {
+		br = new BufferedReader(new InputStreamReader(System.in));
+		init();
+		br.close();
+	}
+
+	static StringTokenizer st;
+	static int nodes;	// 마을의 개수
+	static PriorityQueue<int[]> peoples;	// 각 마을의 인원
+	static boolean[][] conn;				// 각 마을이 연결되어 있는지 
+	static void init() throws IOException {
+		nodes = Integer.parseInt(br.readLine().trim());
+		// 각 마을의 인원을 기준으로 내림차순 정렬
+		peoples = new PriorityQueue<>((a, b) -> b[1] - a[1]);
+		
+		st = new StringTokenizer(br.readLine().trim());
+		for(int idx=0; idx<nodes; idx++) {
+			peoples.offer(new int[] {idx, Integer.parseInt(st.nextToken())});
+		}
+		
+		// 도로의 개수는 N-1
+		conn = new boolean[nodes][nodes];
+		for(int edge=0; edge < nodes-1; edge++) {
+			st = new StringTokenizer(br.readLine().trim());
+			int nodeA = Integer.parseInt(st.nextToken())-1;
+			int nodeB = Integer.parseInt(st.nextToken())-1;
+			
+			conn[nodeA][nodeB] = true;
+			conn[nodeB][nodeA] = true;
+		}
+		
+		// 우수마을을 선정한다.
+		getBestTown();
+	}
+	
+	/*
+	 * 1. 각 마을의 인원을 기준으로 내림차순한 PQ 를 사용한다. 
+	 * 		1-1. 현재 마을 인접한 마을 중, 우수 마을이 없다면, 선택한다. 
+	 */
+	static boolean[] picked;	// 우수마을로 선정된 마을을 기록한다.
+	static void getBestTown() {
+		int maxPeople = 0;
+		picked = new boolean[nodes];
+		
+		while(!peoples.isEmpty()) {
+			int[] nowTown = peoples.poll();
+			int townNo = nowTown[0];
+			int people = nowTown[1];
+			
+			// 현 마을의 인접한 마을에 우수 마을이 없나 확인한다. 
+			if(!checkNearTown(townNo)) continue;
+			
+			// 우수마을 선정이 가능하다. 
+			picked[townNo] = true;
+			maxPeople += people;
+		}
+		
+		System.out.println(maxPeople);
+	}
+	
+	static boolean checkNearTown(int townNo) {
+		for(int near=0; near<nodes; near++) {
+			if(near == townNo) continue;	// 자기 자신은 패스
+			
+			// 인접한 마을이고, 우수마을로 선정되어있다면 
+			if(conn[townNo][near] && picked[near]) return false;
+		}
+		
+		return true;
+	}
+}
+
+/* 
+ * N 개의 마을이 있고, 트리 구조로 이루어져 있다. 
+ * 마을과 마을 사이를 잇는 N-1 개의 길이 있다. 
+ * 양방향이다. 
+ * 
+ * 조건
+ * 1. 우수 마을로 선정된 마을 주민 수의 총 합을 최대로 한다. 
+ * 2. 우수 마을은 인접해있을 수 없다. 
+ * 3. 우수 마을이 아닌 마을과 우수 마을은 적어도 한 개 인접해있어야한다.
+ */
