@@ -28,22 +28,21 @@ public class BOJ_5052_전화번호목록_박재환 {
 		}
 		
 		// 한 번호가 다른 번호의 접두어인 경우가 없어야한다. 
-		// 번호를 길이 순으로 정렬한다. 
-		Arrays.sort(telList, (a, b) -> a.length() - b.length());
+		Arrays.sort(telList); // 사전순 정렬
 		
 		sb.append(isOk() ? "YES" : "NO").append('\n');
 	}
 	
 	/*
-	 * 전화번호 최대 10000 개
+	 * 전화번호 최대 10000 개 XXXXXX
 	 * 완탐시 1억 -> 딱 1초
+	 * 
+	 * 사전 순 정렬로, 바로 뒤 원소와만 비교
 	 */
 	static boolean isOk() {
-		for(int i=0; i<telListCnt; i++) {
-			for(int j=i+1; j<telListCnt; j++) {
-				if(telList[j].startsWith(telList[i])) return false;
-			}
-		}
-		return true;
+	    for (int i = 0; i < telListCnt - 1; i++) {
+	        if (telList[i + 1].startsWith(telList[i])) return false;
+	    }
+	    return true;
 	}
 }
