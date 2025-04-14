@@ -71,7 +71,7 @@ public class SWEA_5653_줄기세포배양_박재환 {
 		int now = 0;
 		// 활성화 시기를 기록한다.
 		List<Integer> lifeCycleList = new ArrayList<>();
-		while(now < time) {
+		while(now <= time) {
 			System.out.println("현 시간 : "+ now);
 
 			// 현재 번식이 가능한 줄기세포들을 기록한다.
@@ -97,6 +97,7 @@ public class SWEA_5653_줄기세포배양_박재환 {
 					if (dead.contains(key)) continue;
 
 					// 중복 처리
+					// 같은 위치에 번식을 하려할 때, 더 큰 생명력을 가진 애만 가능
 					if (duplicated.containsKey(key)) {
 						duplicated.put(key, Math.max(duplicated.get(key), lifeCycle));
 					} else {
@@ -133,14 +134,13 @@ public class SWEA_5653_줄기세포배양_박재환 {
 				int[] cur = q.poll();
 				int x = cur[0];
 				int y = cur[1];
-				int lifeCycle = cur[2];
+
 				int key = x * 50001 + y;
+				int lifeCycle = duplicated.get(key);
 
 				// 생명력 수치가 동일할 때만 선택
-				if (lifeCycle == duplicated.get(key)) {
-					pq.offer(new int[] {x, y, now + lifeCycle, lifeCycle});
-					dead.add(key);  // 이제 확정된 줄기세포 위치만 dead에 추가
-				}
+				pq.offer(new int[] {x, y, now + lifeCycle, lifeCycle});
+				dead.add(key);  // 이제 확정된 줄기세포 위치만 dead에 추가
 			}
 //			System.out.println("---------------------");
 
@@ -155,10 +155,10 @@ public class SWEA_5653_줄기세포배양_박재환 {
 //		System.out.println();
 		int cnt = 0;
 		// list 에서 활성화 되어있는 애들을 세어준다.
-		for(int i : lifeCycleList) {
-			if(i >= time) cnt++;
+//		for(int i : lifeCycleList) {
+//			if(i >= time) cnt++;
 //			System.out.println(i);
-		}
+//		}
 //		System.out.println();
 		sb.append(cnt+pq.size());
 	}
