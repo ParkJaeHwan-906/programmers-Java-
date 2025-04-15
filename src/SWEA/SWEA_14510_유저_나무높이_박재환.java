@@ -50,20 +50,17 @@ public class SWEA_14510_유저_나무높이_박재환 {
 		// 이때 해당 높이를 다 자라기 위해서 필요한 날짜 수를 구한다.
 		int even = 0;	// 짝수
 		int odd = 0;	// 홀수
+		int total = 0;
 		for(int tree : trees) {
 			int needH = maxH - tree;
-			
+			total += needH;
 			even += needH/2;
 			odd += needH%2;
 		}
 		
-		// 최대로 걸리는 날짜 
-		int days = even + odd;
+		int days = total/3*2 + total%3;	// 가장 이상적인 날짜
 		
-		if(even > odd) {	// 짝수 날이 더 많이 필요한 경우
-			int diff = (even - odd)*2;	// even 과 odd 는 한 쌍을 이룬다. 이때 쌍을 이루지 못한다면, 이는 홀수 날 중 버려지는 날이 있다는 것이다. 
-			int zip = (diff/3)
-		}
+		if(odd <= )
 		
 		sb.append(total/3*2 + total%3);
 	}
