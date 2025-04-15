@@ -3,7 +3,7 @@ package SWEA;
 import java.util.*;
 import java.io.*;
 
-public class SWEA_14510_유저_나무높이_박재환 {
+public class SWEA_14510_나무높이_박재환 {
 	static BufferedReader br;
 	static StringBuilder sb;
 	public static void main(String[] args) throws IOException {
@@ -48,21 +48,25 @@ public class SWEA_14510_유저_나무높이_박재환 {
 		
 		// 가장 큰 나무를 기준으로 각 나무가 자라야하는 높이를 구한다.
 		// 이때 해당 높이를 다 자라기 위해서 필요한 날짜 수를 구한다.
-		int even = 0;	// 짝수
 		int odd = 0;	// 홀수
 		int total = 0;
 		for(int tree : trees) {
 			int needH = maxH - tree;
 			total += needH;
-			even += needH/2;
 			odd += needH%2;
 		}
 		
 		int days = total/3*2 + total%3;	// 가장 이상적인 날짜
+		int one = days/2 + days%2;
+
+		int result;
+		if(odd <= one) {
+			result = days;
+		} else {
+			result = 2 * odd - 1;
+		}
 		
-		if(odd <= )
-		
-		sb.append(total/3*2 + total%3);
+		sb.append(result);
 	}
 }
 
