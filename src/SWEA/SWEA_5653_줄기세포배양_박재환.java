@@ -72,7 +72,7 @@ public class SWEA_5653_줄기세포배양_박재환 {
 		// 활성화 시기를 기록한다.
 		List<Integer> lifeCycleList = new ArrayList<>();
 		while(now <= time) {
-			System.out.println("현 시간 : "+ now);
+//			System.out.println("현 시간 : "+ now);
 
 			// 현재 번식이 가능한 줄기세포들을 기록한다.
 			Map<Integer, Integer> duplicated = new HashMap<>();
@@ -87,7 +87,7 @@ public class SWEA_5653_줄기세포배양_박재환 {
 				int activeTime = cur[2];
 				int lifeCycle = cur[3];
 
-				lifeCycleList.add(now+lifeCycle);
+				lifeCycleList.add(now+lifeCycle-1);
 
 				for (int dir = 0; dir < 4; dir++) {
 					int nx = x + dx[dir];
@@ -144,7 +144,7 @@ public class SWEA_5653_줄기세포배양_박재환 {
 			}
 //			System.out.println("---------------------");
 
-			System.out.println(pq.size() + lifeCycleList.size());
+//			System.out.println(pq.size() + lifeCycleList.size());
 
 			now++;
 		}
@@ -155,11 +155,13 @@ public class SWEA_5653_줄기세포배양_박재환 {
 //		System.out.println();
 		int cnt = 0;
 		// list 에서 활성화 되어있는 애들을 세어준다.
-//		for(int i : lifeCycleList) {
-//			if(i >= time) cnt++;
+		for(int i : lifeCycleList) {
+			if(i > time) cnt++;
 //			System.out.println(i);
-//		}
-//		System.out.println();
+		}
+		
+//		System.out.println(lifeCycleList.size());
+		
 		sb.append(cnt+pq.size());
 	}
 }
