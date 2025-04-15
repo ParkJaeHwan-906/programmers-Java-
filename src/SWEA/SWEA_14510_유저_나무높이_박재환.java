@@ -1,0 +1,83 @@
+package SWEA;
+
+import java.util.*;
+import java.io.*;
+
+public class SWEA_14510_유저_나무높이_박재환 {
+	static BufferedReader br;
+	static StringBuilder sb;
+	public static void main(String[] args) throws IOException {
+		br = new BufferedReader(new InputStreamReader(System.in));
+		sb = new StringBuilder();
+		int TC = Integer.parseInt(br.readLine().trim());
+		for (int testCase=1; testCase<TC+1; testCase++) {
+			sb.append('#').append(testCase).append(' ');
+			init();
+			sb.append('\n');
+		}
+		br.close();
+		System.out.println(sb);
+	}
+	
+	static StringTokenizer st;
+	static int[] trees;
+	static int treeCnt;
+	static int maxH;		// 나무 중 가장 큰 나무 ( 기준 )
+	static void init() throws IOException {
+		maxH = -1;
+		
+		treeCnt = Integer.parseInt(br.readLine().trim());
+		trees = new int[treeCnt];
+		
+		st = new StringTokenizer(br.readLine().trim());
+		for(int i=0; i<treeCnt; i++) {
+			trees[i] = Integer.parseInt(st.nextToken());
+			maxH = Math.max(maxH, trees[i]);
+		}
+		
+		findMinDay();
+	}
+	
+	// 나무의 높이가 달라지는데 걸리는 최소 날짜를 구한다. 
+	static void findMinDay() {
+		/*
+		 * 홀수 날에는 +1
+		 * 짝수 날에는 +2
+		 * => 즉 2일 동안 자랄 수 있는 나무의 높이는 총 3 이다. 
+		 */
+		
+		// 가장 큰 나무를 기준으로 각 나무가 자라야하는 높이를 구한다.
+		// 이때 해당 높이를 다 자라기 위해서 필요한 날짜 수를 구한다.
+		int even = 0;	// 짝수
+		int odd = 0;	// 홀수
+		for(int tree : trees) {
+			int needH = maxH - tree;
+			
+			even += needH/2;
+			odd += needH%2;
+		}
+		
+		// 최대로 걸리는 날짜 
+		int days = even + odd;
+		
+		if(even > odd) {	// 짝수 날이 더 많이 필요한 경우
+			int diff = (even - odd)*2;	// even 과 odd 는 한 쌍을 이룬다. 이때 쌍을 이루지 못한다면, 이는 홀수 날 중 버려지는 날이 있다는 것이다. 
+			int zip = (diff/3)
+		}
+		
+		sb.append(total/3*2 + total%3);
+	}
+}
+
+/* 
+ * N 개의 나무 
+ * 각 나무의 키가 주어짐 
+ * 물을 주면 키가 자람 -> 하루에 한 나무만 물을 줄 수 있음 
+ * 	첫 날에 물 준 나무는 1 자라고
+ * 	둘째 날에 물 준 나무는 2 자라고
+ * 	셋째 날에 물 준 나무는 1 자란다
+ * => 짝수 날에는 2
+ * => 홀수 날에는 1 
+ * 
+ * 모든 나무의 높이가 같아질 수 있는 최소 날짜 
+ */
