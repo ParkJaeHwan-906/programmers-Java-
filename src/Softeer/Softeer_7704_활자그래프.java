@@ -16,6 +16,7 @@ public class Softeer_7704_활자그래프 {
 	static long[][] minDists;			// 각 그래프의 1->2, 2->1 의 최단 경로를 저장한다.
 	static List<long[]>[] graph;		// 각 그래프의 연결 상태를 나타냄
 	static final long INF = 1_000_000_000_000_000_001L;	// 최대 값 지정
+	// -> 10^18 까지는 경로로 인정, 하지만 딱 맞춰 최대값을 지정하면, 유효 경로인지, 유효하지 않은 경로인지 판단 어려움
 	static void init() throws IOException {
 		graphCnt = Integer.parseInt(br.readLine().trim());
 		minDists = new long[graphCnt+1][2];		// 1-base
