@@ -13,12 +13,18 @@ public class Softeer_7704_활자그래프 {
 	
 	static StringTokenizer st;
 	static int graphCnt;			// 활자 그래프의 개수 
-	static long[] minDists;			// 각 그래프의 1->2 혹은 2->1 의 최단 경로를 저장한다. 
-	static final long INF = 1_000_000_000_000_000_000L;	// 최대 값 지정 
+	static long[][] minDists;			// 각 그래프의 1->2, 2->1 의 최단 경로를 저장한다.
+	static List<long[]>[] graph;		// 각 그래프의 연결 상태를 나타냄
+	static final long INF = 1_000_000_000_000_000_001L;	// 최대 값 지정
 	static void init() throws IOException {
 		graphCnt = Integer.parseInt(br.readLine().trim());
-		minDists = new long[graphCnt+1];		// 1-base
-		
+		minDists = new long[graphCnt+1][2];		// 1-base
+
+		for(int i=1; i<graphCnt+1; i++) {
+			minDists[i][0] = INF;
+			minDists[i][1] = INF;
+		}
+
 		// 1. 활자 그래프를 입력 받음 
 		for(int i=1; i<graphCnt+1; i++) {
 			// 2. 현재 활자 그래프의 정점의 개수와, 간선/타 활자 그래프를 찍은 횟수나 주어짐
@@ -27,7 +33,7 @@ public class Softeer_7704_활자그래프 {
 			int doSomeThing = Integer.parseInt(st.nextToken());	// 간선을 찍을 수도, 타 그래프을 찍을수도 있음 
 			
 			// 2-1. 현재 그래프의 정점의 개수만큼 공간을 할당해줌 
-			List<long[]>[] graph = new ArrayList[nodeCnt+1];		// 1-base
+			graph = new ArrayList[nodeCnt+1];		// 1-base
 			for(int node=0; node<nodeCnt+1; node++) {
 				graph[node] = new ArrayList<>();
 			}
@@ -38,20 +44,32 @@ public class Softeer_7704_활자그래프 {
 				int from = Integer.parseInt(st.nextToken());
 				int to = Integer.parseInt(st.nextToken());
 				long costOrGraph = Long.parseLong(st.nextToken());
-				
-				// 단방향 그래프
-				graph[from].add(new long[] {to, costOrGraph});
+
+				if(costOrGraph >= 0) {	// 간선인 경우
+					// 단방향 그래프
+					graph[from].add(new long[]{to, costOrGraph});
+				} else {	// 그래프인 경우
+					int graphNo = (int) Math.abs(costOrGraph);
+
+					// 그래프를 끼고 이동이 가능한 경우
+					if(minDists[graphNo][0] < INF) {
+						graph[from].add(new long[]{to, minDists[graphNo][0]});
+					}
+					if(minDists[graphNo][1] < INF) {
+						graph[to].add(new long[]{from, minDists[graphNo][1]});
+					}
+				}
 			}
 			
-			// 해당 그래프의 1->2 / 2->1 의 최단 경로를 지정한다
+			// 해당 그래프의 1->2 / 2->1 의 최단 경로를 저장한다
 			// 이는 그래프가 중간에 찍히게 될 경우를 대비해서임
-			minDists[i] = getMinDist(graph, 1, 2);
+			minDists[i][0] = Math.min(getMinDist(graph, 1, 2), minDists[i][0]);
 			if(i < graphCnt) {	// 마지막 그래프가 아니라면 
-				minDists[i] = Math.min(minDists[i], getMinDist(graph, 2, 1));
+				minDists[i][1] = Math.min(getMinDist(graph, 2, 1), minDists[i][1]);
 			}
 		}
-	
-		System.out.println(minDists[graphCnt] == INF ? -1 : minDists[graphCnt]);
+
+		System.out.println(minDists[graphCnt][0] >= INF ? -1 : minDists[graphCnt][0]);
 	}
 	
 	/*
@@ -83,26 +101,11 @@ public class Softeer_7704_활자그래프 {
 			// 현재 노드와 연결되어 있는 노드들을 순회한다.
 			for(long[] conn : graph[from]) {
 				int to = (int)conn[0];
-				long costOrGraph = conn[1];
+				long dist = conn[1];
 				
-				// costOrGraph 가 양수, 음수 일때 구분 
-				if(costOrGraph >= 0) {	// 간선 연결 
-					
-					if(costOrGraph >= INF) continue;
-					
-					if(dp[to] > accSum + costOrGraph) {	// 최적해라면 
-						dp[to] = accSum + costOrGraph;
-						pq.offer(new long[] {to, dp[to]});
-					}
-				} else {	// 그래프 연결 
-					int graphNo = (int) Math.abs(costOrGraph);
-					
-					if(minDists[graphNo] >= INF) continue;
-					
-					if(dp[to] > accSum + minDists[graphNo]) {
-						dp[to] = accSum + minDists[graphNo];
-						pq.offer(new long[] {to, dp[to]});
-					}
+				if(dp[to] > accSum + dist) {
+					dp[to] = accSum + dist;
+					pq.offer(new long[] {to, dp[to]});
 				}
 			}
 		}
