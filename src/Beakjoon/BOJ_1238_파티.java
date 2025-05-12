@@ -1,9 +1,6 @@
 package Beakjoon;
 
 import java.util.*;
-
-import comb.comb;
-
 import java.io.*;
 
 public class BOJ_1238_파티 {
@@ -56,8 +53,8 @@ public class BOJ_1238_파티 {
 			reverseGraphList[to].add(new int[] {from, weight});
 		}
 		
-//		floyd();
-		dijkstra();
+		floyd();
+//		dijkstra();
 	}
 	
 	/*
@@ -69,15 +66,21 @@ public class BOJ_1238_파티 {
 		for(int mid=1; mid<nodeCnt+1; mid++) {			// 경유 노드
 			for(int from=1; from<nodeCnt+1; from++) {	// 출발 노드
 				// 1-1. 경유 노드와 출발 노드가 같을 수 없음 
-				if(mid == from) continue;
+//				if(mid == from) continue;
 				for(int to=1; to<nodeCnt+1; to++) {		// 도착 노드 
 					// 1-2. 경유 노드와 출발 노드가 같을 수 없읍
-					if(mid==to) continue;
+//					if(mid==to) continue;
 					// 1-3. 츌발 노드와 도착 노드가 같으면 자기 자신을 참조
-					if(from == to) {
-						graphArr[from][to] = 0;
-						continue;
-					}
+//					if(from == to) {
+//						graphArr[from][to] = 0;
+//						continue;
+//					}
+					// 위 조건만 처리하면 통과하긴 함
+					// 조건 주석처리했을 때  
+					// -> 1624 ms
+					
+					// 주석처리 하지 않았을 때 
+					// -> 2792 ms 
 					
 					// 이전의 최적해와 비교하여 갱신
 					graphArr[from][to] = Math.min(graphArr[from][to], 
@@ -88,9 +91,9 @@ public class BOJ_1238_파티 {
 		}
 		
 		// 결과 확인 
-//		for(long[] arr : floydArr) {
-//			System.out.println(Arrays.toString(arr));
-//		}
+		for(int[] arr : graphArr) {
+			System.out.println(Arrays.toString(arr));
+		}
 		
 		// 최대 소요 시간 구하기 
 		long maxValue = Long.MIN_VALUE;
