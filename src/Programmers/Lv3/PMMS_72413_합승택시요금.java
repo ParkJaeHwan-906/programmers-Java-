@@ -9,7 +9,7 @@ public class PMMS_72413_합승택시요금 {
                 {4,1,10},
                 {3,5,24},
                 {5,6,2},
-                {3,1,4},
+                {3,1,41},
                 {5,1,24},
                 {4,6,50},
                 {2,4,66},
@@ -20,19 +20,10 @@ public class PMMS_72413_합승택시요금 {
         System.out.println(new PMMS_72413_합승택시요금().solution(n,s,a,b,fares));
     }
 
-    class Route {
-        int to;
-        int cost;
-
-        public Route(int to, int cost) {
-            this.to = to;
-            this.cost = cost;
-        }
-    }
-    List<Route>[] nodes;
-    int singleCost;
-    int multiCost;
+    int[][] distMap;
+    int minCost;
     public int solution(int n, int s, int a, int b, int[][] fares) {
+        int singleCostFinal = 0, multiCostFinal = 0;
         /*
             n : 3 ~ 200
             fares : (from, to, cost)
@@ -41,53 +32,55 @@ public class PMMS_72413_합승택시요금 {
             1. 경유지가 존재한다.
             2. 노드의 개수가 300 개이다. ( 1 ~ n 번 )
             3. 합승을 하지 않고 이동하는 경우가 더 싸다면 합승을 하지 않는다.
+            ---
+            데려다주고 가는 것이 아닌, 중간 지점을 찾아서 내려준다.
+            => 플로이드 워셜 O(n^3)
          */
         init(n, fares);     // 경로 연결 구성
-        findMinCost(s, a, true);    // 혼자 타고 가는 경우
-        findMinCost(s, b, false);
-        int nCost = multiCost/2;
-        multiCost = Integer.MAX_VALUE;
-        findMinCost(b, a, false);
-        nCost += multiCost;
-        return Math.min(singleCost, nCost);
+        findMinCost(n);      // 플로이드 워셜
+        calcPrice(n, s, a, b);
+        return minCost;
     }
 
+    final int INF = 20_000_001;
     void init(int n, int[][] fares) {
-        singleCost = multiCost = Integer.MAX_VALUE;
-        nodes = new ArrayList[n+1];
-        for(int i=0; i<n+1; i++) nodes[i] = new ArrayList<>();
+        minCost = Integer.MAX_VALUE;
+        distMap = new int[n+1][n+1];
+        for(int from=1; from<n+1; from++) {
+            for(int to=1; to<n+1; to++) {
+                if(from == to) distMap[from][to] = 0;
+                else distMap[from][to] = INF;
+            }
+        }
 
         for(int[] conn : fares) {
             int from = conn[0];
             int to = conn[1];
             int cost = conn[2];
-            nodes[from].add(new Route(to, cost));
+            distMap[from][to] = cost;
+            distMap[to][from] = cost;
         }
     }
 
-    void findMinCost(int start, int end, boolean isSingle) {
-        int targetCost = isSingle ? singleCost : multiCost;
-        PriorityQueue<int[]> pq = new PriorityQueue<>((a,b)->Integer.compare(a[1], b[1]));
-        // 1. 시작 위치 설정
-        pq.offer(new int[] {start, 0});
-        // 2. 최단거리 찾기
-        while(!pq.isEmpty()) {
-            int[] cur = pq.poll();
-            int curNode = cur[0];
-            int curCost = cur[1];
-            if(curNode == end) {    // 2-1. 목적지에 도착
-                targetCost = Math.min(targetCost, curCost);
-                continue;
-            }
-            // 2-2. 이전의 최적해를 넘는 경우
-            if(curCost >= targetCost) continue;
-
-            for(Route route : nodes[curNode]) {
-                pq.offer(new int[] {route.to, curCost+route.cost});
+    void findMinCost(int n) {
+        for(int mid=1; mid<n+1; mid++) {
+            for(int from=1; from<n+1; from++) {
+                for(int to=1; to<n+1; to++) {
+                    if(from == to) continue;
+                    distMap[from][to] = Math.min(distMap[from][to],
+                            distMap[from][mid]+distMap[mid][to]);
+                }
             }
         }
+    }
 
-        if(isSingle) singleCost = targetCost;
-        else multiCost = targetCost;
+    void calcPrice(int n, int s, int a, int b) {
+        // 1. 각자 택시를 타는 경우
+        minCost = Math.min(minCost, distMap[s][a]+distMap[s][b]);
+        // 2. 중간지점에서 택시를 타는 경우
+        for(int mid=1; mid<n+1; mid++) {
+            minCost = Math.min(minCost,
+                    distMap[s][mid]+distMap[mid][b]+distMap[mid][a]);
+        }
     }
 }
