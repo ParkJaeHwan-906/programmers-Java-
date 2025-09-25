@@ -70,84 +70,97 @@ public class 개구리의여행 {
 
     /**
      * 최단 시간을 구한다.
-     * BFS
+     * BFS / dijkstra
+     *  -> 가중치 ( 점프 ) 가 존재한다. -> 다익스트라
      *
      * 최단 경로가 최단 시간을 보장하지 못함
      * 결국 완탐으로 이동?
      */
     static int[] dx = {0,1,0,-1};
     static int[] dy = {1,0,-1,0};
+    static final int INF = 987654321;
     static void findMinTime(int r1, int c1, int r2, int c2) {
-        int[][] visited = new int[n + 1][n + 1];
-        Queue<int[]> q = new LinkedList<>();
-        q.offer(new int[]{r1, c2, 1, 0});  // (x, y, jump, time)
-        for (int i = 1; i < n + 1; i++) Arrays.fill(visited[i], Integer.MAX_VALUE);
+        // 시간이 짧은 순으로 정렬 -> 최단 시간 찾기
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> Integer.compare(a[3], b[3]));      // (x, y, jump, time)
+        int[][][] visited = new int[n+1][n+1][6];       // 각 map 에 대해 jump 가중치에 대한 최소 시간 기록
+        for(int x=0; x<n+1; x++) {
+            for(int y=0; y<n+1; y++) {
+                Arrays.fill(visited[x][y], INF);
+            }
+        }
+        // 1. 시작 위치 설정
+        pq.offer(new int[] {r1, c1, 1, 0});
+        visited[r1][c1][1] = 0;
 
-        int curJump;
-        while (!q.isEmpty()) {
-            int[] cur = q.poll();
+        while(!pq.isEmpty()) {
+            int[] cur = pq.poll();
             int curX = cur[0];
             int curY = cur[1];
-            curJump = cur[2];
+            int curJump = cur[2];
             int curTime = cur[3];
-            if (curX == r2 && curY == c2) {
-                visited[curX][curY] = Math.min(curTime, visited[curX][curY]);
-                continue;
-            }
-            if (visited[curX][curY] >= curTime) continue;
 
-            // 이동 가능 (상 하 좌 우)
-            // 1. 현재 점프력으로 이동
-            for (int dir = 0; dir < 4; dir++) {
-                int nx = curX + dx[dir] * curJump;
-                int ny = curY + dy[dir] * curJump;
-                if (isNotMap(nx, ny)) continue;
-                if (!isSafeRoute(curX, curY, nx, ny, dir)) continue;
-                if (map[ny][ny] != '.') continue;
-                if (visited[nx][ny] <= curTime + 1) continue;
-                visited[nx][ny] = curTime + 1;
-                q.offer(new int[]{nx, ny, curJump, curTime + 1});
+            if(visited[curX][curY][curJump] < curTime) continue;    // 이전의 최적 해보다 작다면
+            if(curX == r2 && curY == c2) {                          // 도착했다면
+                sb.append(curTime).append('\n');
+                return;
             }
-            // 2. 점프력을 1 증가시켜 이동
-            if (curJump < 5) {
-                int increasedJump = curJump + 1;
-                int increasedTime = increasedJump * increasedJump;
-                for (int dir = 0; dir < 4; dir++) {
-                    int nx = curX + dx[dir] * increasedJump;
-                    int ny = curY + dy[dir] * increasedJump;
-                    if (isNotMap(nx, ny)) continue;
-                    if (map[ny][ny] != '.') continue;
-                    // 이동하는 길에 천적이 있는지 확인
-                    if (!isSafeRoute(curX, curY, nx, ny, dir)) continue;
-                    if (visited[nx][ny] <= curTime + increasedTime + 1) continue;
-                    visited[nx][ny] = curTime + increasedTime + 1;
-                    q.offer(new int[]{nx, ny, curJump, curTime + increasedTime + 1});
+
+            // 이동 가능
+            // 1-1. curJump
+            for(int dir=0; dir<4; dir++) {
+                int nx = curX + dx[dir]*curJump;
+                int ny = curY + dy[dir]*curJump;
+
+                // map 을 벗어나는가
+                if(isNotMap(nx, ny)) continue;
+                // 이동 경로 상 천적이 있는가
+                if(!isSafeRoute(curX, curY, nx, ny, dir)) continue;
+                // 도착 위치에 천적 혹은 미끄러운 돌이 있는가
+                if(map[nx][ny] != '.') continue;
+
+                // 이전의 최적 해 보다 작은 경우만 진행
+                if(curTime+1 < visited[nx][ny][curJump]) {
+                    visited[nx][ny][curJump] = curTime + 1;
+                    pq.offer(new int[]{nx, ny, curJump, curTime + 1});
                 }
             }
-            // 3. 점프력을 차차 감소시켜보며 이동
-            if (curJump > 1) {
-                for (int dir = 0; dir < 4; dir++) {
-                    for(int jump=1; jump<curJump; jump++) {
-                        int nx = curX + dx[dir] + jump;
-                        int ny = curY + dy[dir] + jump;
-                        if (isNotMap(nx, ny)) continue;
-                        // 이동하는 길에 천적이 있는지 확인
-                        if (!isSafeRoute(curX, curY, nx, ny, dir)) continue;
-                        if (map[ny][ny] != '.') continue;
-                        if (visited[nx][ny] <= curTime + 1) continue;
-                        visited[nx][ny] = curTime + 1;
-                        q.offer(new int[]{nx, ny, curJump, curTime + 1});
+            // 1-2. Upgrade Jump
+            if(curJump < 5) {
+                int tempJump = curJump + 1;
+                int tempTime = curTime + tempJump*tempJump;
+
+                if(visited[curX][curY][tempJump] > tempTime) {
+                    visited[curX][curY][tempJump] = tempTime;
+                    pq.offer(new int[] {curX, curY, tempJump, tempTime});
+                }
+            }
+            // 1-3. Downgrade Jump
+            if(curJump > 1) {
+                int tempTime = curTime+1;
+                for(int tempJump=1; tempJump<curJump; tempJump++) {
+                    if(visited[curX][curY][tempJump] > tempTime) {
+                        visited[curX][curY][tempJump] = tempTime;
+                        pq.offer(new int[] {curX, curY, tempJump, tempTime});
                     }
                 }
             }
         }
+        sb.append(-1).append('\n');
     }
 
     static boolean isSafeRoute(int x1, int y1, int x2, int y2, int dir) {
-        for(int x=x1; x<=x2; x++) {
-            for(int y=y1; y<=y2; y++) {
-                if(map[x][y] == '#') return false;
-            }
+        switch(dir) {
+            case 1: case 3:
+                while(x1 != x2) {
+                    x1 += dx[dir];
+                    if(map[x1][y1] == '#') return false;
+                }
+                break;
+            default :
+                while(y1 != y2) {
+                    y1 += dy[dir];
+                    if(map[x1][y1] == '#') return false;
+                }
         }
         return true;
     }
