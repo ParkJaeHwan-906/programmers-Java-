@@ -82,7 +82,25 @@ public class 민트초코우유 {
         st = new StringTokenizer(br.readLine().trim());
         n = Integer.parseInt(st.nextToken());
         t = Integer.parseInt(st.nextToken());
+        stMap = new Student[n+1][n+1];
+        grMap = new int[n+1][n+1];
 
+        for(int x=1; x<n+1; x++) {
+            String str = br.readLine().trim();
+            for(int y=1; y<n+1; y++) {
+                stMap[x][y] = new Student(String.valueOf(str.charAt(y-1)));
+            }
+        }
+        for(int x=1; x<n+1; x++) {
+            st = new StringTokenizer(br.readLine().trim());
+            for(int y=1; y<n+1; y++) {
+                stMap[x][y].trust = Integer.parseInt(st.nextToken());
+            }
+        }
+        // 하루하루 이동
+        while(t-- > 0) {
+
+        }
     }
 
     /**
@@ -91,7 +109,7 @@ public class 민트초코우유 {
      * - 신앙심
      * - 방어 상태
      */
-    class Student {
+    static class Student {
         /**
          * T : 민트
          * C : 초코
@@ -104,6 +122,11 @@ public class 민트초코우유 {
         String food;
         int trust;
         boolean depend;
+
+        public Student(String food) {
+            this.food = food;
+            this.depend = false;
+        }
     }
     /**
      * 신봉 그룹 정보
@@ -111,8 +134,33 @@ public class 민트초코우유 {
      * - 대표
      * - 소속 학생들
      */
+    static class Group {
+        int id;
+        Student repSt;
+        PriorityQueue<Student> member;
+
+        public Group (int id, List<Student> member) {
+            this.id = id;
+            this.member = new PriorityQueue<>((a, b) -> Integer.compare(b.trust, a.trust));
+            this.member.addAll(member);
+            repSt = this.member.poll();
+        }
+    }
 
     /**
-     * 1. 그룹을 어떻게 묶을 것인가
+     * 1. 아침
+     * 모든 학생의 신앙심을 + 1
+     */
+    static void morining() {
+        for(int x=1; x<n+1; x++) {
+            for(int y=1; y<n+1; y++) {
+                stMap[x][y].trust++;
+            }
+        }
+    }
+
+    /**
+     * 2. 점심
+     * 그룹을 묶는다.
      */
 }
