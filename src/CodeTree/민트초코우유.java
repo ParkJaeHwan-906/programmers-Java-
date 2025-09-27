@@ -2,6 +2,7 @@ package CodeTree;
 
 import java.util.*;
 import java.io.*;
+
 public class 민트초코우유 {
     static BufferedReader br;
     static StringBuilder sb;
@@ -14,153 +15,177 @@ public class 민트초코우유 {
     }
 
     /**
-     * N x N 크기의 격자 (1,1) -> (N, N)
-     * 음식의 종류
      * T : 민트
      * C : 초코
-     * C : 우유
-     * 초기에는 셋 중 하나만을 신봉
-     * 다른 사람에게 영향을 받아 바뀔 수 있음
-     * -> 민트 초코 우유가 생길수도 있음
+     * M : 우유
      *
-     * 1. 아침
-     * 신앙심을 1 씩 얻는다
-     *
-     * 2. 점심
-     * 인접한 학생들과 신봉하는 음식이 완전하게 같은 경우 그룹을 형성
-     * 인접 -> 상 하 좌 우
-     *
-     * 그룹의 대표
-     * - 신앙심이 가장 큰 사람
-     * - 동일한 경우 x 위치가 가장 작은 사람
-     * - 그것조차 같으면 y 위치가 가장 작은 사람
-     *
-     * 그룹 대표에게 신앙심 1씩 양도
-     *
-     * 3. 저녁
-     * 그룹 1
-     * 단일 음식 : 민트, 초코, 우유
-     * 그룹 2
-     * 이중 조합 : 초코 우유, 민트 우유, 민트 초코
-     * 그룹 3
-     * 삼중 조합 : 민트 초코 우유
-     *
-     * 모든 그룹 대표가 신앙을 전파
-     * - 대표자의 신앙심이 높은 순
-     * - 동일한 경우 행 번호가 작은 순
-     * - 열 번호가 작은 순
-     *
-     * 전파자는 신앙심 중 1 만 남기고, 나머지를 간절함으로 바꿔 전파에 사용
-     * 전파 방향은 B 를 4로 나눈 나머지
-     * 방향 [0 : 위, 1 : 아래, 2 : 왼쪽, 3 : 오른쪽]
-     *
-     * 전파자는 전파 방향으로 한 칸씩 이동하며 전파를 시도
-     * 격자 밖으로 나가거나, 간절함이 0 이 되면 전파는 종료
-     *
-     * 전파 대상과 신봉음식이 같은 경우, 패스
-     * 다른 경우 전파 진행, 전파 대상의 신앙심 y 일대, 간절함이 크면 전파 성공 ( x > y )
-     * 신봉 음식 변경
-     * 간절함은 y+1 줄어들고, 대상의 신앙심은 1 증가
-     *
-     * (x >= y )
-     * 신봉 음식 결합
-     *
-     * 전파를 당한 대상은 방어 상태가 되어, 당일에는 전파를 하지 않는다.
-     * 하지만 추가 전파를 받는 것은 가능하다.
-     *
-     * => 각 날의 저녁 이후
-     * [민트초코우유, 민트초코, 민트우유, 초코우유, 우유, 초코, 민트]
-     * 신앙심 총 합을 출력하라
+     * T : 100 : 4
+     * C : 010 : 2
+     * M : 001 : 1
      */
-    int[] dx = {-1,1,0,0};
-    int[] dy = {0,0,-1,1};
+    static int[] dx = {-1,1,0,0};
+    static int[] dy = {0,0,-1,1};
     static StringTokenizer st;
     static int n, t;
-    static Student[][] stMap;       // 학생들 정보 map
-    static int[][] grMap;           // 그룹 map
+    static int[][] foods;
+    static int[][] trusts;
     static void init() throws IOException {
         st = new StringTokenizer(br.readLine().trim());
         n = Integer.parseInt(st.nextToken());
         t = Integer.parseInt(st.nextToken());
-        stMap = new Student[n+1][n+1];
-        grMap = new int[n+1][n+1];
-
-        for(int x=1; x<n+1; x++) {
+        foods = new int[n][n];
+        trusts = new int[n][n];
+        for(int x=0; x<n; x++) {
             String str = br.readLine().trim();
-            for(int y=1; y<n+1; y++) {
-                stMap[x][y] = new Student(String.valueOf(str.charAt(y-1)));
+            for(int y=0; y<n; y++) {
+                char food = str.charAt(y);
+                switch(food) {
+                    case 'T' :
+                        foods[x][y] = 4;
+                        break;
+                    case 'C' :
+                        foods[x][y] = 2;
+                        break;
+                    case 'M' :
+                        foods[x][y] = 1;
+                        break;
+                }
             }
         }
-        for(int x=1; x<n+1; x++) {
+        for(int x=0; x<n; x++) {
             st = new StringTokenizer(br.readLine().trim());
-            for(int y=1; y<n+1; y++) {
-                stMap[x][y].trust = Integer.parseInt(st.nextToken());
+            for(int y=0; y<n; y++) {
+                trusts[x][y] = Integer.parseInt(st.nextToken());
             }
         }
-        // 하루하루 이동
+
         while(t-- > 0) {
-
+            List<int[]> repList = step2();
+            step3(repList);
         }
     }
 
-    /**
-     * 학생의 정보
-     * - 신봉 음식
-     * - 신앙심
-     * - 방어 상태
-     */
-    static class Student {
-        /**
-         * T : 민트
-         * C : 초코
-         * M : 우유
-         * TC : 민트초코
-         * CM : 초코우유
-         * MU : 민트우유
-         * TCM : 민트초코우유
-         */
-        String food;
-        int trust;
-        boolean depend;
+    static List<int[]> step2() {
+        boolean[][] visited = new boolean[n][n];
+        List<int[]> repList = new ArrayList<>();        // 각 그룹의 대표들만 저장
+        for(int x=0; x<n; x++) {
+            for(int y=0; y<n; y++) {
+                if(visited[x][y]) continue;
 
-        public Student(String food) {
-            this.food = food;
-            this.depend = false;
-        }
-    }
-    /**
-     * 신봉 그룹 정보
-     * - id
-     * - 대표
-     * - 소속 학생들
-     */
-    static class Group {
-        int id;
-        Student repSt;
-        PriorityQueue<Student> member;
-
-        public Group (int id, List<Student> member) {
-            this.id = id;
-            this.member = new PriorityQueue<>((a, b) -> Integer.compare(b.trust, a.trust));
-            this.member.addAll(member);
-            repSt = this.member.poll();
-        }
-    }
-
-    /**
-     * 1. 아침
-     * 모든 학생의 신앙심을 + 1
-     */
-    static void morining() {
-        for(int x=1; x<n+1; x++) {
-            for(int y=1; y<n+1; y++) {
-                stMap[x][y].trust++;
+                repList.add(findGroup(x, y, visited));
             }
         }
+        return repList;
     }
 
+    static void step3(List<int[]> repList) {
+        // 정렬
+        repList.sort((a, b) -> {
+            int aFood = foodCnt(foods[a[0]][a[1]]);
+            int bFood = foodCnt(foods[b[0]][b[1]]);
+            if(aFood != bFood) return Integer.compare(aFood, bFood);
+            int aTrust = trusts[a[0]][a[1]];
+            int bTrust = trusts[b[0]][b[1]];
+            if(aTrust != bTrust) return Integer.compare(bTrust, aTrust);
+            if(a[0] != b[0]) return Integer.compare(a[0], b[0]);
+            return Integer.compare(a[1], b[1]);
+        });
+
+        boolean[][] defense = new boolean[n][n];        // 방어상태
+        for(int[] point : repList) {
+            int x = point[0];
+            int y = point[1];
+            if(defense[x][y]) continue;
+            int dir = trusts[x][y] % 4;
+            int beg = trusts[x][y]-1;
+            int food = foods[x][y];
+            trusts[x][y] = 1;
+
+            while(true) {
+                x += dx[dir];
+                y += dy[dir];
+                if(isNotBoard(x, y)) break;
+                if(foods[x][y] == food) continue;
+
+                if(beg > trusts[x][y]) {
+                    beg -= (trusts[x][y]+1);
+                    trusts[x][y]++;
+                    foods[x][y] = food;
+                } else {
+                    trusts[x][y]+=beg;
+                    beg = 0;
+                    foods[x][y] |= food;
+                }
+                defense[x][y] = true;
+                if(beg == 0) break;
+            }
+        }
+
+        int[] arr = new int[8];
+        for(int x=0; x<n; x++) {
+            for(int y=0; y<n; y++) {
+                arr[foods[x][y]] += trusts[x][y];
+            }
+        }
+
+        sb.append(arr[7]).append(' ').append(arr[6]).append(' ')
+                .append(arr[5]).append(' ').append(arr[3]).append(' ')
+                .append(arr[1]).append(' ').append(arr[2]).append(' ')
+                .append(arr[4]).append(' ').append('\n');
+    }
+
+    static int[] findGroup(int x, int y, boolean[][] visited) {
+        Queue<int[]> q = new LinkedList<>();
+        q.offer(new int[] {x, y});
+        visited[x][y] = true;
+        int hx = x, hy = y;     // 대표 좌표 후보
+        int cnt = 1;
+        while(!q.isEmpty()) {
+            int[] cur = q.poll();
+            int curx = cur[0];
+            int cury = cur[1];
+            for(int dir=0; dir<4; dir++) {
+                int nx = curx + dx[dir];
+                int ny = cury + dy[dir];
+
+                if(isNotBoard(nx, ny)) continue;
+                if(foods[x][y] != foods[nx][ny]) continue;
+                if(visited[nx][ny]) continue;
+
+                visited[nx][ny] = true;
+                cnt++;
+                q.offer(new int[] {nx, ny});
+                // 대표 후보 비교
+                if(trusts[hx][hy] < trusts[nx][ny]) {
+                    hx = nx; hy = ny;
+                } else if(trusts[hx][hy] == trusts[nx][ny]) {
+                    if(hx > nx) {
+                        hx = nx; hy = ny;
+                    } else if(hx == nx && hy > ny) {
+                        hx = nx; hy = ny;
+                    }
+                }
+            }
+        }
+        trusts[hx][hy] += cnt;          // 아침 루틴을 합쳐버림
+        return new int[] {hx, hy};
+    }
+
+
     /**
-     * 2. 점심
-     * 그룹을 묶는다.
+     * 공통
      */
+    static boolean isNotBoard(int x, int y) {
+        return x<0||y<0||x>=n||y>=n;
+    }
+
+    static int foodCnt(int food) {
+        switch (food) {
+            case 1: case 2: case 4:
+                return 1;
+            case 3: case 5: case 6:
+                return 2;
+        }
+        return 3;
+    }
 }
