@@ -39,10 +39,17 @@ public class 해적선장코디 {
      * [총 피해량, 사격 선박 수, 사격한 선박들의 선박 번호]
      */
     static StringTokenizer st;
-    static int t;
+    static int time;
+    static int curTime;
     static void init() throws IOException {
-        t = Integer.parseInt(br.readLine().trim());
-        while(t-- > 0) {
+        time = Integer.parseInt(br.readLine().trim());
+        /**
+         * 각 명령은 1시간 단위로 실행된다.
+         * 즉 0 부터 Time 까지 실행한다고 생각한다.
+         *
+         * 현 시간을 기준으로 함선의 공격 가능 여부를 판단한다.
+         */
+        for(curTime=0; curTime<time; curTime++) {
             st = new StringTokenizer(br.readLine().trim());
             int commandType = Integer.parseInt(st.nextToken());
 
@@ -60,37 +67,46 @@ public class 해적선장코디 {
                     attack();
                     break;
             }
-            decreaseRemainTimeToAttack();
         }
     }
     static class BattleShip {
         int id;                 // id
         int power;              // 공격력
         int reloadTime;         // 재장전 시간
-        int remainTimeToAttack; // 다음 공격까지 남은 시간
+        /**
+         * 마지막으로 공격을 한 시간을 기준으로
+         * 현재 시간과 비교하여 공격가능한 상태인지 확인한다.
+         */
+        int lastAttack;         // 마지막으로 공격한 시간
 
+        /**
+         * 두 개의 생성자를 사용한다. 
+         * 
+         * 가장 처음 readyAttack 단계에서 함선을 생성할 때 사용할 생성자
+         * 함포의 공격력을 증가시킬 때 사용할 생성자
+         */
         public BattleShip(int id, int power, int reloadTime) {
             this.id = id;
             this.power = power;
             this.reloadTime = reloadTime;
-            this.remainTimeToAttack = 0;
+            this.lastAttack = Integer.MIN_VALUE;
         }
 
-        public void decreaseRemainTimeToAttack() {
-            if(this.remainTimeToAttack == 0) return;
-            this.remainTimeToAttack--;
+        public BattleShip(int id, int power, int reloadTime, int lastAttack) {
+            this.id = id;
+            this.power = power;
+            this.reloadTime = reloadTime;
+            this.lastAttack = lastAttack;
         }
     }
     static PriorityQueue<BattleShip> battleShips;
+    static Map<Integer, BattleShip> battleShipState;       // 함선의 최신 상태를 유지
     static void readyToAttack() {
         battleShips = new PriorityQueue<>((a, b) -> {
-           // 1. 당장 공격이 가능한 함선인지
-           if(a.remainTimeToAttack != b.remainTimeToAttack) return Integer.compare(a.remainTimeToAttack, b.remainTimeToAttack);
-           // 2. 공격력이 더 높은지
-           if(a.power != b.power) return Integer.compare(b.power, a.power);
-           // 3. id 가 낮은지
-           return Integer.compare(a.id, b.id);
+           if(a.power == b.power) return Integer.compare(a.id, b.id);
+           return Integer.compare(b.power, a.power);
         });
+        battleShipState = new HashMap<>();
         int battleShipCnt = Integer.parseInt(st.nextToken());
         while(battleShipCnt-- > 0) {
             addBattleShip();
@@ -101,16 +117,26 @@ public class 해적선장코디 {
         int id = Integer.parseInt(st.nextToken());
         int power = Integer.parseInt(st.nextToken());
         int reloadTime = Integer.parseInt(st.nextToken());
-
-        battleShips.offer(new BattleShip(id, power, reloadTime));
+        BattleShip battleShip = new BattleShip(id, power, reloadTime);
+        battleShipState.put(id, battleShip);
+        battleShips.offer(battleShip);
     }
 
+    /**
+     * 💡함포를 교체할 때마다, PQ 를 순회하며 값을 갱신하는 것은 O(n)의 연산을 계속해서 해야함
+     *
+     * 지연 갱신 (Lazy Evaluation) 기법을 사용한다.
+     * Map 에 id 에 해당하는 함포의 공격력을 늘 최신의 상태로 유지한다.
+     *
+     * 새로운 객체를 생성해서 PQ 에 넣어, 정렬 상태를 유지한다.
+     */
     static void changePower() {
         int id = Integer.parseInt(st.nextToken());
         int newPower = Integer.parseInt(st.nextToken());
-        for(BattleShip battleShip : battleShips) {
-            if(battleShip.id == id) battleShip.power = newPower;
-        }
+        BattleShip battleShip = battleShipState.get(id);
+        BattleShip newBattleShip = new BattleShip(battleShip.id, newPower, battleShip.reloadTime, battleShip.lastAttack);
+        battleShipState.put(id, newBattleShip);
+        battleShips.offer(newBattleShip);
     }
     static void attack() {
         int attackLimit = 5;
@@ -120,10 +146,14 @@ public class 해적선장코디 {
 
         while(attackLimit > 0 && !battleShips.isEmpty()) {
             BattleShip ship = battleShips.poll();
-            if (ship.remainTimeToAttack == 0) { // 공격 가능한 경우만
+            /**
+             * 이 부분에서 최신값이 아닌 함선들은 제외시킨다.
+             */
+            if(battleShipState.get(ship.id).power != ship.power) continue;
+            if (ship.lastAttack + ship.reloadTime <= curTime) { // 공격 가능한 경우만
                 totalDamage += ship.power;
                 pickedList.add(ship);
-                ship.remainTimeToAttack = ship.reloadTime;
+                ship.lastAttack = curTime;
                 attackLimit--;
             }
             temp.add(ship);
@@ -138,10 +168,6 @@ public class 해적선장코디 {
                 .append(pickedList.size()).append(' ');
         for (BattleShip battleShip : pickedList) sb.append(battleShip.id).append(' ');
         sb.append('\n');
-    }
-
-    static void decreaseRemainTimeToAttack() {
-        for(BattleShip battleShip : battleShips) battleShip.decreaseRemainTimeToAttack();
     }
 }
 /**
