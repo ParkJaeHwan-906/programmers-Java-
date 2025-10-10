@@ -4,10 +4,10 @@ import java.util.*;
 import java.io.*;
 public class AI로봇청소기 {
     static BufferedReader br;
-    static StringBuilder sb;
+//    static StringBuilder sb;
     public static void main(String[] args) throws IOException {
         br = new BufferedReader(new InputStreamReader(System.in));
-        sb = new StringBuilder();
+//        sb = new StringBuilder();
         init();
         br.close();
     }
@@ -91,9 +91,18 @@ public class AI로봇청소기 {
             moveRobotKings();
             cleanRobotKing();
             stackedDust();
-            for(int[] arr : map) System.out.println(Arrays.toString(arr));
+            spreadDust();
+//            for(int[] arr : map) System.out.println(Arrays.toString(arr));
         }
 
+        int sum = 0;
+        for(int x=0; x<mapSize; x++) {
+            for(int y=0; y<mapSize; y++) {
+                if(map[x][y] < 1) continue;
+                sum += map[x][y];
+            }
+        }
+        System.out.println(sum);
     }
     /**
      * [청소기 이동]
@@ -128,7 +137,7 @@ public class AI로봇청소기 {
                 if(find) break;
             }
 
-            System.out.printf("%d : [%d, %d]\n", robotKing.id, robotKing.x+1, robotKing.y+1);
+//            System.out.printf("%d : [%d, %d]\n", robotKing.id, robotKing.x+1, robotKing.y+1);
         }
     }
     /**
@@ -153,22 +162,26 @@ public class AI로봇청소기 {
         for(int i=0; i<robotKings.size(); i++) {
             RobotKing robotKing = robotKings.get(i);
             int curDust = map[robotKing.x][robotKing.y];
-            int maxDust = -1;   // 청소할 수 있는 최대 먼지 합
-            int maxDir = -1;
+//            int maxDust = -1;   // 청소할 수 있는 최대 먼지 합
+//            int maxDir = -1;
             int[][] dxdy = dirDxDy.get(robotKing.dir);
             for(int dir=0; dir<4; dir++) {
                 int nx = robotKing.x + dxdy[dir][0];
                 int ny = robotKing.y + dxdy[dir][1];
                 if(isNotMap(nx, ny)) continue;
-                if(maxDust < curDust + map[nx][ny]) {
-                    maxDust = curDust + map[nx][ny];
-                    maxDir = dir;
-                }
+//                if(maxDust < curDust + map[nx][ny]) {
+//                    maxDust = curDust + map[nx][ny];
+//                    maxDir = dir;
+//                }
+                if(map[nx][ny] < 1) continue;
+
+                if(map[nx][ny] > 20) map[nx][ny] -= 20;
+                else map[nx][ny] = 0;
             }
             if(curDust > 20) map[robotKing.x][robotKing.y]-=20;
             else map[robotKing.x][robotKing.y]=0;
-            if(map[robotKing.x+dxdy[maxDir][0]][robotKing.y+dxdy[maxDir][1]] > 20) map[robotKing.x+dxdy[maxDir][0]][robotKing.y+dxdy[maxDir][1]] -= 20;
-            else map[robotKing.x+dxdy[maxDir][0]][robotKing.y+dxdy[maxDir][1]] = 0;
+//            if(map[robotKing.x+dxdy[maxDir][0]][robotKing.y+dxdy[maxDir][1]] > 20) map[robotKing.x+dxdy[maxDir][0]][robotKing.y+dxdy[maxDir][1]] -= 20;
+//            else map[robotKing.x+dxdy[maxDir][0]][robotKing.y+dxdy[maxDir][1]] = 0;
         }
     }
     /**
@@ -179,6 +192,28 @@ public class AI로봇청소기 {
             for(int y=0; y<mapSize; y++) {
                 if(map[x][y] < 1) continue;
                 map[x][y] += 5;
+            }
+        }
+    }
+    /**
+     * [먼지 확산]
+     */
+    static void spreadDust() {
+        boolean[][] isChecked = new boolean[mapSize][mapSize];
+        for(int x=0; x<mapSize; x++) {
+            for(int y=0; y<mapSize; y++) {
+                if(map[x][y] != 0) continue;
+                int dustSum = 0;
+                for(int dir=0; dir<4; dir++) {
+                    int nx = x + dx[dir];
+                    int ny = y + dy[dir];
+                    if(isNotMap(nx, ny)) continue;
+                    if(isChecked[nx][ny]) continue;
+                    if(map[nx][ny] < 1) continue;
+                    dustSum += map[nx][ny];
+                }
+                map[x][y] = dustSum / 10;
+                isChecked[x][y] = true;
             }
         }
     }
