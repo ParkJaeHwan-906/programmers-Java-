@@ -4,12 +4,13 @@ import java.util.*;
 import java.io.*;
 public class AI로봇청소기 {
     static BufferedReader br;
-//    static StringBuilder sb;
+    static StringBuilder sb;
     public static void main(String[] args) throws IOException {
         br = new BufferedReader(new InputStreamReader(System.in));
-//        sb = new StringBuilder();
+        sb = new StringBuilder();
         init();
         br.close();
+        System.out.println(sb);
     }
     /**
      * N x N 공간이 있다.
@@ -49,18 +50,17 @@ public class AI로봇청소기 {
     static class RobotKing {
         int id;
         int x, y;
-        int dir;
 
         RobotKing(int id, int x, int y) {
             this.id = id;
             this.x = x;
             this.y = y;
-            this.dir = -1;  // 초기값 ( 방향이 정해지지 않음 )
         }
     }
     static StringTokenizer st;
     static int mapSize, robotKingCnt, testCnt;
     static int[][] map;
+    static boolean[][] isChecked;
     static List<RobotKing> robotKings;
     static void init() throws IOException {
         robotKings = new ArrayList<>();
@@ -69,6 +69,7 @@ public class AI로봇청소기 {
         robotKingCnt = Integer.parseInt(st.nextToken());
         testCnt = Integer.parseInt(st.nextToken());
         map = new int[mapSize][mapSize];
+        isChecked = new boolean[mapSize][mapSize];
         for(int x=0; x<mapSize; x++) {
             st = new StringTokenizer(br.readLine().trim());
             for(int y=0; y<mapSize; y++) {
@@ -82,9 +83,10 @@ public class AI로봇청소기 {
         }
         for(int robotKing=1; robotKing<=robotKingCnt; robotKing++) {
             st = new StringTokenizer(br.readLine().trim());
-            int x = Integer.parseInt(st.nextToken());
-            int y = Integer.parseInt(st.nextToken());
-            robotKings.add(new RobotKing(robotKing, x-1, y-1));
+            int x = Integer.parseInt(st.nextToken())-1;
+            int y = Integer.parseInt(st.nextToken())-1;
+            robotKings.add(new RobotKing(robotKing, x, y));
+            isChecked[x][y] = true;
         }
 
         while(testCnt-- > 0) {
@@ -93,50 +95,83 @@ public class AI로봇청소기 {
             stackedDust();
             spreadDust();
 //            for(int[] arr : map) System.out.println(Arrays.toString(arr));
+            int sum = 0;
+            for(int x=0; x<mapSize; x++) {
+                for(int y=0; y<mapSize; y++) {
+                    if(map[x][y] < 1) continue;
+                    sum += map[x][y];
+                }
+            }
+            sb.append(sum).append('\n');
         }
 
-        int sum = 0;
-        for(int x=0; x<mapSize; x++) {
-            for(int y=0; y<mapSize; y++) {
-                if(map[x][y] < 1) continue;
-                sum += map[x][y];
-            }
-        }
-        System.out.println(sum);
     }
     /**
      * [청소기 이동]
      * (상 좌 우 하) 순으로 우선 탐색
+     *
+     * 💡수정 제안
+     * 로봇 청소기는 (상, 하, 좌, 우)로 움직일 수 있고, 가장 근접한 오염된 공간으로 이동한다.
+     * - 행의 번호가 적은 장소가 우선 순위
+     * - 열의 번호가 작은 장소가 우선 순위
+     * -> 따라서 (상 좌 우 하) 순으로 탐색한다.
      */
     static int[] dx = {-1,0,0,1};
     static int[] dy = {0,-1,1,0};
     static void moveRobotKings() {
         // 로봇 청소기를 id 순으로 이동 시킨다.
         // 물건이 있거나, 청소기가 있는 경우에는 이동할 수 없음
-        boolean[][] isChecked = new boolean[mapSize][mapSize];
         for(int i=0; i<robotKings.size(); i++) {
+            Queue<int[]> q = new LinkedList<>();
+            boolean[][] visited = new boolean[mapSize][mapSize];
             RobotKing robotKing = robotKings.get(i);
-            isChecked[robotKing.x][robotKing.y] = true;
-            for(int dist=1; dist<mapSize; dist++) {
-                boolean find = false;
-                for(int dir=0; dir<4; dir++) {
-                    int nx = robotKing.x + dx[dir] * dist;
-                    int ny = robotKing.y + dy[dir] * dist;
+            int minDist = Integer.MAX_VALUE;
+            int minX=Integer.MAX_VALUE, minY=Integer.MAX_VALUE;
+            q.offer(new int[] {robotKing.x, robotKing.y, 0});       // x, y, dist
+            visited[robotKing.x][robotKing.y] = true;
+            // BFS 를 사용해 가장 근처에 있는 오염된 구역을 찾는다.
+            while(!q.isEmpty()) {
+                int[] cur = q.poll();
+                int curX = cur[0];
+                int curY = cur[1];
+                int curDist = cur[2];
 
-                    if(isNotMap(nx, ny)) continue;
-                    if(isChecked[nx][ny]) continue;
-                    if(map[nx][ny] < 1) continue;
-
-                    robotKing.x = nx;
-                    robotKing.y = ny;
-                    robotKing.dir = dir;
-                    isChecked[nx][ny] = true;
-                    find = true;
-                    break;
+                if(map[curX][curY] > 0) {   // 현 위치가 오염된 구역이라면
+                    if(curDist < minDist) {
+                        minDist = curDist;
+                        minX = curX;
+                        minY = curY;
+                    } else if(curDist == minDist) { // 같은 거리에 오염된 구역이 존재
+                        if(curX < minX) { // 행의 번호가 작은 순으로 우선 순위
+                            minX = curX;
+                            minY = curY;
+                        } else if(curX == minX) { // 열의 번호가 작은 순으로 우선순위
+                            minY = Math.min(curY, minY);
+                        }
+                    }
+                    continue;
                 }
-                if(find) break;
-            }
 
+                if(curDist >= minDist) continue;        // 이미 최적 해를 넘은 경우 더 이상 탐색하지 않음
+
+                for(int dir=0; dir<4; dir++) {
+                    int nx = curX + dx[dir];
+                    int ny = curY + dy[dir];
+                    if(isNotMap(nx, ny)) continue;
+                    if(visited[nx][ny] || isChecked[nx][ny]) continue;
+                    if(map[nx][ny] == -1) continue;
+
+                    q.offer(new int[] {nx, ny, curDist+1});
+                    visited[nx][ny] = true;
+                }
+            }
+            // 로봇 청소기의 이동 반영
+            if (minDist != Integer.MAX_VALUE) {
+                isChecked[robotKing.x][robotKing.y] = false;
+                isChecked[minX][minY] = true;
+                robotKing.x = minX;
+                robotKing.y = minY;
+            }
 //            System.out.printf("%d : [%d, %d]\n", robotKing.id, robotKing.x+1, robotKing.y+1);
         }
     }
@@ -150,38 +185,50 @@ public class AI로봇청소기 {
      * 격자만 청소가 가능
      *
      * 한 격자에 최대 20 의 먼지만 청소가 가능
+     *
+     * 💡개선
+     * 현재 위치를 기준으로 4방향을 모두 탐색한다는 가정하에,
+     * 제외할 1 가지 방향만 정하면, 더 편하게 계산이 가능하다.
      */
-    static Map<Integer, int[][]> dirDxDy =
-            Map.of(                     // 우 하 좌 상
-                    0, new int[][] {{0,1}, {1,0}, {0,-1}, {-1,0}},
-                    1, new int[][] {{-1,0}, {0,1}, {1,0}, {0,-1}},
-                    2, new int[][] {{1,0}, {0,-1}, {-1,0}, {0,1}},
-                    3, new int[][] {{0,-1}, {-1,0}, {0,-1}, {1,0}}
-            );
+    // 오른쪽, 아래쪽, 왼쪽, 위쪽 순으로 방향을 탐색한다.
+    // 제외한다는 기준으로 순서를 왼쪽, 위쪽, 오른쪽, 아래쪽 방향으로 탐색한다.
+    static int[] cleanDx = {0,-1,0,1,0};
+    static int[] cleanDy = {-1,0,1,0,0};
     static void cleanRobotKing() {
         for(int i=0; i<robotKings.size(); i++) {
             RobotKing robotKing = robotKings.get(i);
-            int curDust = map[robotKing.x][robotKing.y];
-//            int maxDust = -1;   // 청소할 수 있는 최대 먼지 합
-//            int maxDir = -1;
-            int[][] dxdy = dirDxDy.get(robotKing.dir);
-            for(int dir=0; dir<4; dir++) {
-                int nx = robotKing.x + dxdy[dir][0];
-                int ny = robotKing.y + dxdy[dir][1];
-                if(isNotMap(nx, ny)) continue;
-//                if(maxDust < curDust + map[nx][ny]) {
-//                    maxDust = curDust + map[nx][ny];
-//                    maxDir = dir;
-//                }
-                if(map[nx][ny] < 1) continue;
+            int maxDust = -1;   // 청소할 수 있는 최대 먼지 합
+            int maxDir = -1;
 
-                if(map[nx][ny] > 20) map[nx][ny] -= 20;
-                else map[nx][ny] = 0;
+            for(int exDir=0; exDir<4; exDir++) {        // 제외할 방향을 선택한다. [왼쪽, 위쪽, 오른쪽, 아래쪽]
+                int accDust = 0;
+                for(int dir=0; dir<5; dir++) {
+                    if(exDir == dir) continue;      // 제외할 방향이라면 합에 포함하지 않는다.
+                    int nx = robotKing.x + cleanDx[dir];
+                    int ny = robotKing.y + cleanDy[dir];
+                    if(isNotMap(nx, ny)) continue;
+                    if(map[nx][ny] < 1) continue;       // 물건이 있거나, 빈 칸이라면 넘어간다.
+
+                    accDust += Math.min(map[nx][ny], 20);       // 한 칸에 최대 20의 먼지만 청소가 가능하다.
+                }
+
+                if(accDust > maxDust) {
+                    maxDir = exDir;
+                    maxDust = accDust;
+                }
             }
-            if(curDust > 20) map[robotKing.x][robotKing.y]-=20;
-            else map[robotKing.x][robotKing.y]=0;
-//            if(map[robotKing.x+dxdy[maxDir][0]][robotKing.y+dxdy[maxDir][1]] > 20) map[robotKing.x+dxdy[maxDir][0]][robotKing.y+dxdy[maxDir][1]] -= 20;
-//            else map[robotKing.x+dxdy[maxDir][0]][robotKing.y+dxdy[maxDir][1]] = 0;
+            // 청소 할 필요가 없다면 넘어간다.
+            if(maxDust == -1 || maxDust == 0) continue;
+            // 실제로 청소를 한다.
+            for(int dir=0; dir<5; dir++) {
+                if(maxDir == dir) continue;      // 제외할 방향이라면 합에 포함하지 않는다.
+                int nx = robotKing.x + cleanDx[dir];
+                int ny = robotKing.y + cleanDy[dir];
+                if(isNotMap(nx, ny)) continue;
+                if(map[nx][ny] < 1) continue;       // 물건이 있거나, 빈 칸이라면 넘어간다.
+
+                map[nx][ny] = Math.max(0, map[nx][ny]-20);
+            }
         }
     }
     /**
@@ -199,7 +246,7 @@ public class AI로봇청소기 {
      * [먼지 확산]
      */
     static void spreadDust() {
-        boolean[][] isChecked = new boolean[mapSize][mapSize];
+        boolean[][] visited = new boolean[mapSize][mapSize];
         for(int x=0; x<mapSize; x++) {
             for(int y=0; y<mapSize; y++) {
                 if(map[x][y] != 0) continue;
@@ -208,12 +255,12 @@ public class AI로봇청소기 {
                     int nx = x + dx[dir];
                     int ny = y + dy[dir];
                     if(isNotMap(nx, ny)) continue;
-                    if(isChecked[nx][ny]) continue;
+                    if(visited[nx][ny]) continue;
                     if(map[nx][ny] < 1) continue;
                     dustSum += map[nx][ny];
                 }
                 map[x][y] = dustSum / 10;
-                isChecked[x][y] = true;
+                visited[x][y] = true;
             }
         }
     }
