@@ -45,9 +45,53 @@ public class 코드트리등산게임 {
      * - 등산 시뮬레이션
      */
     static BufferedReader br;
+    static StringTokenizer st;
     static void init() throws IOException {
         br = new BufferedReader(new InputStreamReader(System.in));
+        int commmandCnt = Integer.parseInt(br.readLine().trim());
+        while(commmandCnt-- > 0) {
+            st = new StringTokenizer(br.readLine().trim());
+            int commandType = Integer.parseInt(st.nextToken());
 
+            switch(commandType) {
+                case 100:
+                    initMountain();
+                    break;
+                case 200:
+                    break;
+                case 300:
+                    break;
+                case 400:
+                    break;
+            }
+        }
         br.close();
+    }
+    /**
+     * 일차원 지도에 n 개의 산이 주어진다.
+     */
+    static int mountainCnt;     // 일차원 지도에 존재하는 산의 개수
+    static void initMountain() {
+        mountainCnt = Integer.parseInt(st.nextToken());
+
+    }
+    /**
+     * 가장 마지막에 산을 추가한다.
+     */
+    static void addMountain() {
+
+    }
+    /**
+     * 지도에 존재하는 산들 중 가장 마지막에 있는 산을 제거한다.
+     */
+    static void removeMountain() {
+
+    }
+    /**
+     * 케이블 카를 이용할 수 있는 산이 왼쪽에서 m 번째 산이라고 가정한다.
+     * 등산 시뮬레이션 중 얻을 수 있는 최대 점수를 출력한다.
+     */
+    static void calcMaxScore() {
+
     }
 }
