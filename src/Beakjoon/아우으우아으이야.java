@@ -3,7 +3,7 @@ package Beakjoon;
 import java.util.*;
 import java.io.*;
 
-public class Main
+public class 아우으우아으이야
 {
 	public static void main(String[] args) throws IOException {
 		init();
