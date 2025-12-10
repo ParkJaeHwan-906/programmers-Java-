@@ -50,53 +50,41 @@ public class 인구이동 {
         /**
          * 각 위치에서 연합국을 구한다.
          */
-        int federationIdx = 1;
-        int[][] visited = new int[n][n];    // 각 연합국이 어떤 연합국인지 구분하기 위해서 int 사용
+        List<List<int[]>> federationLists = new ArrayList<>();
+        boolean[][] visited = new boolean[n][n];    // 각 연합국이 어떤 연합국인지 구분하기 위해서 int 사용
         boolean flag = false;
         for(int x=0; x<n; x++) {
             for(int y=0; y<n; y++) {
-                if(visited[x][y] != 0) continue;
-                if(findFederation(x, y, visited, federationIdx++) > 1) flag = true;
+                if(visited[x][y]) continue;
+                List<int[]> federationList = findFederation(x, y, visited);
+                if(federationList.size() > 1) flag = true;
+                federationLists.add(federationList);
             }
         }
         // 더 이상 이민할 수 있는 나라가 없다면 false
         if(!flag) return false;
 
-        // 아직 이민 가능
-        Set<Integer> federationSet = new HashSet<>();
-        for(int x=0; x<n; x++) {
-            for(int y=0; y<n; y++) {
-                if(visited[x][y] == 0) continue;
-
-                int targetFederationIdx = visited[x][y];
-                if(federationSet.add(targetFederationIdx)) continue;
-
-                List<int[]> federationList = new ArrayList<>();
-                int totalPeopleCnt = 0;
-                for(int nx=0; nx<n; nx++) {
-                    for(int ny=0; ny<n; ny++) {
-                        if(visited[nx][ny] != targetFederationIdx) continue;
-                        federationList.add(new int[] {nx, ny});
-                        totalPeopleCnt += board[nx][ny];
-                    }
-                }
-
-                int samePeople = totalPeopleCnt / federationList.size();
-                for(int[] loc : federationList) {
-                    board[loc[0]][loc[1]] = samePeople;
-                }
+        for(List<int[]> federationList : federationLists) {
+            int totalPeopleCnt = 0;
+            for(int[] federation : federationList) {
+                totalPeopleCnt += board[federation[0]][federation[1]];
+            }
+            int samePeopleCnt = totalPeopleCnt / federationList.size();
+            for(int[] federation : federationList) {
+                board[federation[0]][federation[1]] = samePeopleCnt;
             }
         }
 
         return true;
     }
 
-    static int findFederation(int x, int y, int[][] visited, int federationIdx) {
+    static List<int[]> findFederation(int x, int y, boolean[][] visited) {
         Queue<int[]> q = new LinkedList<>();
+        List<int[]> federationList = new ArrayList<>();
         q.offer(new int[] {x,y});
-        visited[x][y] = federationIdx;
+        visited[x][y] = true;
+        federationList.add(new int[] {x, y});
 
-        int federationSize = 1;
         while(!q.isEmpty()) {
             int[] cur = q.poll();
             int curX = cur[0];
@@ -108,17 +96,17 @@ public class 인구이동 {
                 int ny = curY + dy[dir];
 
                 if(nx < 0 || ny < 0 || nx >= n || ny >= n) continue;
-                if(visited[nx][ny] != 0) continue;
+                if(visited[nx][ny]) continue;
                 int nCurPeopleCnt = board[nx][ny];
 
                 int diffPeopleCnt = Math.abs(curPeopleCnt - nCurPeopleCnt);
                 if(diffPeopleCnt < l || diffPeopleCnt > r) continue;
 
-                visited[nx][ny] = federationIdx;
+                visited[nx][ny] = true;
                 q.offer(new int[] {nx, ny});
-                federationSize++;
+                federationList.add(new int[] {nx, ny});
             }
         }
-        return federationSize;
+        return federationList;
     }
 }
